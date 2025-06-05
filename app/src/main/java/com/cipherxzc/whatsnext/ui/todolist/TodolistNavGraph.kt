@@ -9,6 +9,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.cipherxzc.whatsnext.ui.core.viewmodel.SyncViewModel
+import com.cipherxzc.whatsnext.ui.core.viewmodel.SyncViewModelFactory
 import com.cipherxzc.whatsnext.ui.core.viewmodel.TodoDataViewModel
 import com.cipherxzc.whatsnext.ui.todolist.viewmodel.ItemDetailViewModel
 import com.cipherxzc.whatsnext.ui.todolist.viewmodel.ItemDetailViewModelFactory
