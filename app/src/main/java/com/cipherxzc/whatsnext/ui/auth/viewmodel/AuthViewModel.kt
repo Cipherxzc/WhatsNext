@@ -1,4 +1,4 @@
-package com.cipherxzc.whatsnext.ui.viewmodel
+package com.cipherxzc.whatsnext.ui.auth.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

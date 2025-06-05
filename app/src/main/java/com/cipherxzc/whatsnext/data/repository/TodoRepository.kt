@@ -7,10 +7,6 @@ import com.google.firebase.Timestamp
 import com.google.firebase.firestore.FirebaseFirestore
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.time.LocalDate
-import java.time.LocalDateTime
-import java.time.Month
-import java.time.ZoneId
 
 class TodoRepository(
     private val database: AppDatabase
@@ -23,19 +19,11 @@ class TodoRepository(
             .document().id
     }
 
-    suspend fun getItemById(id: String): TodoItem? = withContext(Dispatchers.IO){
-        todoItemDao.getItemById(id)
-    }
-    suspend fun getItemsByUser(userId: String): List<TodoItem> = withContext(Dispatchers.IO){
-        todoItemDao.getItemsByUser(userId)
-    }
-    suspend fun getUnsyncedItems(userId: String): List<TodoItem> = withContext(Dispatchers.IO){
-        todoItemDao.getUnsyncedItems(userId)
-    }
+    suspend fun getItemById(id: String): TodoItem? = todoItemDao.getItemById(id)
+    suspend fun getItemsByUser(userId: String): List<TodoItem> = todoItemDao.getItemsByUser(userId)
+    suspend fun getUnsyncedItems(userId: String): List<TodoItem> = todoItemDao.getUnsyncedItems(userId)
 
-    private suspend fun insertOrUpdateItem(item: TodoItem) = withContext(Dispatchers.IO) {
-        todoItemDao.insertOrUpdate(item)
-    }
+    private suspend fun insertOrUpdateItem(item: TodoItem) = todoItemDao.insertOrUpdate(item)
 
     suspend fun insertItem(
         userId: String,
@@ -102,7 +90,7 @@ class TodoRepository(
         todoItemDao.deleteById(id)
     }
 
-    suspend fun updateItemFromCloud(item: TodoItem) {
+    suspend fun upsertItem(item: TodoItem) {
         if (item.isDeleted) {
             // delete 具有最高的优先级，即使不是最新的，任何客户端delete了其他地方都不该保留
             removeItem(item.id)
@@ -116,7 +104,7 @@ class TodoRepository(
         }
     }
 
-    suspend fun insertDefaultData(userId: String) = withContext(Dispatchers.IO) {
+    suspend fun insertDefaultData(userId: String) {
         insertItem(
             userId = userId,
             title = "学习如何使用 What's Next",

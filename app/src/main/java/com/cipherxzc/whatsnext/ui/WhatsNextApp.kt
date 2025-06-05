@@ -5,13 +5,14 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.cipherxzc.whatsnext.ui.viewmodel.AuthViewModel
+import com.cipherxzc.whatsnext.ui.auth.viewmodel.AuthViewModel
+import com.cipherxzc.whatsnext.ui.viewmodel.TodoDataViewModel
 
 @Composable
 fun WhatsNextApp() {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = viewModel()
-    val databaseViewModel: DatabaseViewModel = viewModel()
+    val todoDataViewModel: TodoDataViewModel = viewModel()
 
     val startRoute = if (authViewModel.currentUser() != null) "main" else "auth"
 
@@ -26,7 +27,7 @@ fun WhatsNextApp() {
                     }
                 },
                 insertDefaultData = { userId, onComplete ->
-                    databaseViewModel.insertDefaultData(userId, onComplete)
+                    todoDataViewModel.insertDefaultData(userId, onComplete)
                 }
             )
         }
@@ -36,13 +37,13 @@ fun WhatsNextApp() {
             if (currentUser == null) {
                 ErrorScreen()
             } else{
-                databaseViewModel.setCurrentUser(currentUser.uid)
+                todoDataViewModel.setCurrentUser(currentUser.uid)
                 MainNavGraph(
                     userName = currentUser.displayName ?: "tourist",
-                    databaseViewModel = databaseViewModel,
+                    todoDataViewModel = todoDataViewModel,
                     onLogout = {
                         authViewModel.logout()
-                        databaseViewModel.resetCurrentUser()
+                        todoDataViewModel.resetCurrentUser()
                         navController.navigate("auth") {
                             popUpTo("main") { inclusive = true }
                         }

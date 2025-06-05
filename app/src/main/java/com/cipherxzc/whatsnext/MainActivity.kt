@@ -3,6 +3,7 @@ package com.cipherxzc.whatsnext
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import com.cipherxzc.whatsnext.ui.WhatsNextApp
 import com.cipherxzc.whatsnext.ui.theme.WhatsNextTheme
 
 class MainActivity : ComponentActivity() {
