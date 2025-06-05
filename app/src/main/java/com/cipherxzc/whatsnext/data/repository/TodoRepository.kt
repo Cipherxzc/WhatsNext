@@ -23,15 +23,26 @@ class TodoRepository(
             .document().id
     }
 
-    suspend fun getItemById(id: String): TodoItem? = todoItemDao.getItemById(id)
-    suspend fun getItemsByUser(userId: String): List<TodoItem> = todoItemDao.getItemsByUser(userId)
-    suspend fun getUnsyncedItems(userId: String): List<TodoItem> = todoItemDao.getUnsyncedItems(userId)
+    suspend fun getItemById(id: String): TodoItem? = withContext(Dispatchers.IO){
+        todoItemDao.getItemById(id)
+    }
+    suspend fun getItemsByUser(userId: String): List<TodoItem> = withContext(Dispatchers.IO){
+        todoItemDao.getItemsByUser(userId)
+    }
+    suspend fun getUnsyncedItems(userId: String): List<TodoItem> = withContext(Dispatchers.IO){
+        todoItemDao.getUnsyncedItems(userId)
+    }
 
-    private suspend fun insertOrUpdateItem(item: TodoItem) {
+    private suspend fun insertOrUpdateItem(item: TodoItem) = withContext(Dispatchers.IO) {
         todoItemDao.insertOrUpdate(item)
     }
 
-    suspend fun insertItem(userId: String, title: String, description: String?, dueDate: Timestamp?): TodoItem {
+    suspend fun insertItem(
+        userId: String,
+        title: String,
+        description: String? = null,
+        dueDate: Timestamp? = null
+    ): TodoItem {
         val item = TodoItem(
             id = generateDocumentId(),
             userId = userId,
@@ -87,15 +98,18 @@ class TodoRepository(
     suspend fun uncompleteItem(id: String) = modifyItem(id, isCompleted = false)
     suspend fun deleteItem(id: String) = modifyItem(id, isDeleted = true)
 
-    suspend fun upsertItem(item: TodoItem) {
+    suspend fun removeItem(id: String) = withContext(Dispatchers.IO){
+        todoItemDao.deleteById(id)
+    }
+
+    suspend fun updateItemFromCloud(item: TodoItem) {
         if (item.isDeleted) {
             // delete 具有最高的优先级，即使不是最新的，任何客户端delete了其他地方都不该保留
-            deleteItem(item.itemId)
+            removeItem(item.id)
         } else {
-            val databaseItem = getItemById(item.itemId)
-            if (databaseItem == null || databaseItem.lastModified <= item.lastModified){
+            val databaseItem = getItemById(item.id)
+            if (databaseItem == null || databaseItem.lastModified < item.lastModified){
                 insertOrUpdateItem(item.copy(
-                    clockInCount = databaseItem?.clockInCount ?: 0,
                     isSynced = true
                 ))
             }
@@ -103,64 +117,15 @@ class TodoRepository(
     }
 
     suspend fun insertDefaultData(userId: String) = withContext(Dispatchers.IO) {
-        val defaultItems = listOf(
-            ClockInItem(
-                itemId    = generateDocumentId(),
-                userId    = userId,
-                name      = "早起",
-                description  = "早睡早起身体好！"
-            ),
-            ClockInItem(
-                itemId    = generateDocumentId(),
-                userId    = userId,
-                name      = "锻炼",
-                description  = "无体育，不华清！"
-            ),
-            ClockInItem(
-                itemId    = generateDocumentId(),
-                userId    = userId,
-                name      = "读书",
-                description  = "书山有路勤为径！"
-            ),
-            ClockInItem(
-                itemId    = generateDocumentId(),
-                userId    = userId,
-                name      = "背单词",
-                description  = "目标托福105分！"
-            )
+        insertItem(
+            userId = userId,
+            title = "学习如何使用 What's Next",
+            description = "这是一个默认的待办事项，您可以删除或修改它。"
         )
-
-        defaultItems.forEach { insertOrUpdateItem(it) }
-
-        val defaultRecords = listOf(
-            defaultItems[0].itemId to LocalDateTime.of(2025, Month.APRIL, 1, 9, 0),
-            defaultItems[0].itemId to LocalDateTime.of(2025, Month.APRIL, 7, 9, 0),
-            defaultItems[0].itemId to LocalDateTime.of(2025, Month.APRIL, 8, 9, 0),
-            defaultItems[0].itemId to LocalDateTime.of(2025, Month.APRIL, 9, 9, 0),
-            defaultItems[0].itemId to LocalDateTime.of(2025, Month.APRIL, 10, 9, 0),
-            defaultItems[0].itemId to LocalDateTime.of(2025, Month.APRIL, 11, 9, 0),
-            defaultItems[0].itemId to LocalDateTime.of(2025, Month.APRIL, 12, 9, 0),
-            defaultItems[0].itemId to LocalDateTime.of(2025, Month.APRIL, 13, 9, 0),
-            defaultItems[1].itemId to LocalDateTime.of(2025, Month.APRIL, 10, 9, 0),
-            defaultItems[2].itemId to LocalDateTime.of(2025, Month.APRIL, 4, 9, 0),
-            defaultItems[2].itemId to LocalDateTime.of(2025, Month.APRIL, 10, 9, 0),
-            defaultItems[2].itemId to LocalDateTime.of(2025, Month.APRIL, 13, 9, 0)
+        insertItem(
+            userId = userId,
+            title = "添加您的第一个 Todo",
+            description = "点击右下角的加号按钮，开始添加您的第一个待办事项！"
         )
-
-        val converter: (LocalDateTime) -> Timestamp = { localDateTime ->
-            val zoneId = ZoneId.systemDefault()
-            val instant = localDateTime.atZone(zoneId).toInstant()
-            Timestamp(instant.epochSecond, instant.nano)
-        }
-
-        defaultRecords.forEach { (itemId, localDateTime) ->
-            val record = ClockInRecord(
-                recordId  = generateDocumentId(),
-                userId    = userId,
-                itemId    = itemId,
-                timestamp = converter(localDateTime),
-            )
-            insertOrUpdateRecord(record)
-        }
     }
 }
