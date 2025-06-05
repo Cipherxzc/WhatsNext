@@ -16,4 +16,8 @@ data class TodoItem (
     val lastModified: Timestamp = Timestamp.now(),
     val isSynced: Boolean = false,
     val isDeleted: Boolean = false,
-)
+) {
+    fun isOverdue(): Boolean {
+        return dueDate != null && dueDate < Timestamp.now()
+    }
+}

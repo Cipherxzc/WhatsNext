@@ -42,26 +42,7 @@ class TodoRepository(
         return item
     }
 
-    private fun TodoItem.modify(
-        title: String = this.title,
-        description: String? = this.description,
-        dueDate: Timestamp? = this.dueDate,
-        isCompleted: Boolean = this.isCompleted,
-        isDeleted: Boolean = this.isDeleted
-    ): TodoItem {
-        return this.copy(
-            title = title,
-            description = description,
-            dueDate = dueDate,
-            isCompleted = isCompleted,
-            isDeleted = isDeleted,
-            // 同步信息
-            lastModified = Timestamp.now(),
-            isSynced = false
-        )
-    }
-
-    suspend fun modifyItem(
+    private suspend fun modifyItem(
         id: String,
         title: String? = null,
         description: String? = null,
@@ -71,16 +52,27 @@ class TodoRepository(
     ) {
         val item = getItemById(id)
         item?.let {
-            val updatedItem = it.modify(
+            val updatedItem = it.copy(
                 title = title ?: it.title,
                 description = description ?: it.description,
                 dueDate = dueDate ?: it.dueDate,
                 isCompleted = isCompleted ?: it.isCompleted,
-                isDeleted = isDeleted ?: it.isDeleted
+                isDeleted = isDeleted ?: it.isDeleted,
+                // 同步信息
+                lastModified = Timestamp.now(),
+                isSynced = false
             )
             insertOrUpdateItem(updatedItem)
         }
     }
+
+    suspend fun updateItem(
+        id: String,
+        title: String? = null,
+        description: String? = null,
+        dueDate: Timestamp? = null,
+        isCompleted: Boolean? = null
+    ) = modifyItem(id, title, description, dueDate, isCompleted)
 
     suspend fun completeItem(id: String) = modifyItem(id, isCompleted = true)
     suspend fun uncompleteItem(id: String) = modifyItem(id, isCompleted = false)

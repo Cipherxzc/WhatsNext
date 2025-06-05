@@ -1,4 +1,4 @@
-package com.cipherxzc.whatsnext.ui.theme
+package com.cipherxzc.whatsnext.ui.core.theme
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle

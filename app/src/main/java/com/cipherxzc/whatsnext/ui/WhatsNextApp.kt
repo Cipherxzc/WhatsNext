@@ -5,8 +5,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.cipherxzc.whatsnext.ui.auth.AuthNavGraph
 import com.cipherxzc.whatsnext.ui.auth.viewmodel.AuthViewModel
-import com.cipherxzc.whatsnext.ui.viewmodel.TodoDataViewModel
+import com.cipherxzc.whatsnext.ui.core.common.ErrorScreen
+import com.cipherxzc.whatsnext.ui.todolist.TodoListNavGraph
+import com.cipherxzc.whatsnext.ui.core.viewmodel.TodoDataViewModel
 
 @Composable
 fun WhatsNextApp() {
@@ -27,7 +30,7 @@ fun WhatsNextApp() {
                     }
                 },
                 insertDefaultData = { userId, onComplete ->
-                    todoDataViewModel.insertDefaultData(userId, onComplete)
+                    todoDataViewModel.insertDefaultData(onComplete, userId)
                 }
             )
         }
@@ -35,10 +38,10 @@ fun WhatsNextApp() {
         composable("main") {
             val currentUser = authViewModel.currentUser()
             if (currentUser == null) {
-                ErrorScreen()
+                ErrorScreen("用户未登录")
             } else{
                 todoDataViewModel.setCurrentUser(currentUser.uid)
-                MainNavGraph(
+                TodoListNavGraph(
                     userName = currentUser.displayName ?: "tourist",
                     todoDataViewModel = todoDataViewModel,
                     onLogout = {

@@ -17,7 +17,7 @@ interface TodoItemDao {
     @Query("DELETE FROM todo_items WHERE id = :id")
     suspend fun deleteById(id: String)
 
-    @Query("SELECT * FROM todo_items WHERE userId = :userId AND isDeleted = 0 ORDER BY id")
+    @Query("SELECT * FROM todo_items WHERE userId = :userId AND isDeleted = 0 ORDER BY dueDate")
     suspend fun getItemsByUser(userId: String): List<TodoItem>
 
     @Query("SELECT * FROM todo_items WHERE id = :id LIMIT 1")

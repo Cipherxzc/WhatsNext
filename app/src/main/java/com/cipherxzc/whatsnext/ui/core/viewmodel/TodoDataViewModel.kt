@@ -1,4 +1,4 @@
-package com.cipherxzc.whatsnext.ui.viewmodel
+package com.cipherxzc.whatsnext.ui.core.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -67,7 +67,22 @@ class TodoDataViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
+    fun updateItem(item: TodoItem) {
+        viewModelScope.launch(Dispatchers.IO) {
+            todoRepo.updateItem(
+                id = item.id,
+                title = item.title,
+                description = item.description,
+                dueDate = item.dueDate,
+                isCompleted = item.isCompleted,
+            )
+        }
+    }
+
     suspend fun deleteItem(itemId: String) = todoRepo.deleteItem(itemId)
+
+    suspend fun completeItem(itemId: String) = todoRepo.completeItem(itemId)
+    suspend fun uncompleteItem(itemId: String) = todoRepo.uncompleteItem(itemId)
 
     suspend fun getItem(itemId: String): TodoItem? {
         return todoRepo.getItemById(itemId)
