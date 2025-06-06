@@ -114,7 +114,7 @@ private fun ItemDetailContent(todoDetailViewModel: TodoDetailViewModel) {
                 OutlinedTextField(
                     value = title,
                     onValueChange = { newTitle ->
-                        todoDetailViewModel.updateTitle(newTitle)
+                        todoDetailViewModel.setTitle(newTitle)
                     },
                     placeholder = { Text("打算做点什么？") },
                     singleLine = true,
@@ -127,7 +127,7 @@ private fun ItemDetailContent(todoDetailViewModel: TodoDetailViewModel) {
                 OutlinedTextField(
                     value = detail,
                     onValueChange = { newDetail ->
-                        todoDetailViewModel.updateDetail(newDetail)
+                        todoDetailViewModel.setDetail(newDetail)
                     },
                     placeholder = { Text("详细描述") },
                     modifier = Modifier

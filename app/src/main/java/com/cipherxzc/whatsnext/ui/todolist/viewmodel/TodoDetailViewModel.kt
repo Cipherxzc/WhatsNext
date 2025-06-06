@@ -27,10 +27,14 @@ class TodoDetailViewModel(
     private val _dueDateFlow = MutableStateFlow<Date?>(null)
     private val _isCompletedFlow = MutableStateFlow<Boolean>(false)
 
-    val titleFlow = _titleFlow
-    val detailFlow = _detailFlow
-    val dueDateFlow = _dueDateFlow
-    val isCompletedFlow = _isCompletedFlow
+    val titleFlow: StateFlow<TextFieldValue> = _titleFlow
+    val detailFlow: StateFlow<TextFieldValue> = _detailFlow
+    val dueDateFlow: StateFlow<Date?> = _dueDateFlow
+    val isCompletedFlow: StateFlow<Boolean> = _isCompletedFlow
+
+    init {
+        loadItem()
+    }
 
     fun loadItem() {
         viewModelScope.launch(Dispatchers.IO) {
@@ -75,17 +79,17 @@ class TodoDetailViewModel(
         isModified = true
     }
 
-    fun updateTitle(newTitle: TextFieldValue) {
+    fun setTitle(newTitle: TextFieldValue) {
         _titleFlow.value = newTitle
         isModified = true
     }
 
-    fun updateDetail(newDetail: TextFieldValue) {
+    fun setDetail(newDetail: TextFieldValue) {
         _detailFlow.value = newDetail
         isModified = true
     }
 
-    fun updateDueDate(newDueDate: Date) {
+    fun setDueDate(newDueDate: Date) {
         _dueDateFlow.value = newDueDate
         isModified = true
     }

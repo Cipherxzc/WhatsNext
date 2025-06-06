@@ -40,7 +40,6 @@ import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoListViewModel
 import com.cipherxzc.whatsnext.ui.core.viewmodel.SyncViewModel
 import com.cipherxzc.whatsnext.ui.todolist.viewmodel.AddTodoViewModel
 import com.cipherxzc.whatsnext.ui.todolist.viewmodel.AddTodoViewModelFactory
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoListViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
