@@ -13,10 +13,10 @@ import kotlinx.coroutines.launch
 import java.util.Date
 
 class ItemDetailViewModel(
-    private val todoDataViewModel: TodoDataViewModel
+    private val todoDataViewModel: TodoDataViewModel,
+    private val itemId: String
 ) : ViewModel() {
 
-    private var currentItemId: String? = null
     private var isModified: Boolean = false
 
     private val _isLoadingFlow = MutableStateFlow(false)
@@ -32,10 +32,7 @@ class ItemDetailViewModel(
     val dueDateFlow = _dueDateFlow
     val isCompletedFlow = _isCompletedFlow
 
-    fun loadItem(itemId: String) {
-        if (itemId == currentItemId) {
-            return
-        }
+    fun loadItem() {
         viewModelScope.launch(Dispatchers.IO) {
             _isLoadingFlow.value = true
 
@@ -50,16 +47,14 @@ class ItemDetailViewModel(
             _dueDateFlow.value = todoItem.dueDate?.toDate()
             _isCompletedFlow.value = todoItem.isCompleted
 
-            currentItemId = itemId
-
             _isLoadingFlow.value = false
         }
     }
 
     fun saveItem() {
-        if (currentItemId != null && isModified){
+        if (isModified){
             todoDataViewModel.updateItem(
-                id = currentItemId!!,
+                id = itemId,
                 title = titleFlow.value.text,
                 detail = detailFlow.value.text,
                 dueDate = dueDateFlow.value?.let { Timestamp(it) },
@@ -97,11 +92,15 @@ class ItemDetailViewModel(
 }
 
 class ItemDetailViewModelFactory(
-    private val todoDataViewModel: TodoDataViewModel
+    private val todoDataViewModel: TodoDataViewModel,
+    private val itemId: String
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         require(modelClass == ItemDetailViewModel::class.java)
-        return ItemDetailViewModel(todoDataViewModel) as T
+        return ItemDetailViewModel(
+            todoDataViewModel = todoDataViewModel,
+            itemId = itemId
+        ) as T
     }
 }

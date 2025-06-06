@@ -23,11 +23,8 @@ fun TodoListNavGraph(
     todoDataViewModel: TodoDataViewModel,
     onLogout: () -> Unit
 ){
-    val itemListViewModel: TodoListViewModel = viewModel(
+    val todoListViewModel: TodoListViewModel = viewModel(
         factory = TodoListViewModelFactory(todoDataViewModel)
-    )
-    val itemDetailViewModel: ItemDetailViewModel = viewModel(
-        factory = ItemDetailViewModelFactory(todoDataViewModel)
     )
     val syncViewModel: SyncViewModel = viewModel(
         factory = SyncViewModelFactory(LocalContext.current.applicationContext as Application, todoDataViewModel)
@@ -38,7 +35,7 @@ fun TodoListNavGraph(
         composable("itemList") {
             TodoListScreen(
                 userName = userName,
-                itemListViewModel = itemListViewModel,
+                todoListViewModel = todoListViewModel,
                 syncViewModel = syncViewModel,
                 onItemClicked = { itemId ->
                     navController.navigate("itemDetail/$itemId")
@@ -51,8 +48,11 @@ fun TodoListNavGraph(
             arguments = listOf(navArgument("itemId") { type = NavType.StringType })
         ) { backStackEntry ->
             val itemId = backStackEntry.arguments?.getString("itemId") ?: return@composable
-            itemDetailViewModel.loadItem(itemId)
-            
+            val itemDetailViewModel: ItemDetailViewModel = viewModel(
+                viewModelStoreOwner = backStackEntry,
+                factory = ItemDetailViewModelFactory(todoDataViewModel, itemId)
+            )
+
             ItemDetailScreen(itemDetailViewModel)
         }
     }

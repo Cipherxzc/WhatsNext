@@ -26,9 +26,6 @@ class TodoListViewModel(
     private val _completedItemsFlow = MutableStateFlow<List<TodoItem>>(emptyList())
     val completedItemsFlow: StateFlow<List<TodoItem>> = _completedItemsFlow
 
-    private val _showDialogFlow = MutableStateFlow(false)
-    val showDialogFlow: StateFlow<Boolean> = _showDialogFlow
-
     private val _isLoadingFlow = MutableStateFlow(false)
     val isLoadingFlow: StateFlow<Boolean> = _isLoadingFlow
 
@@ -54,9 +51,9 @@ class TodoListViewModel(
         }
     }
 
-    fun insertItem(title: String, description: String? = null, dueDate: Date? = null) {
+    fun insertItem(title: String, detail: String = "", dueDate: Date? = null) {
         viewModelScope.launch(Dispatchers.IO) {
-            val newItem = todoDataViewModel.insertItem(title, description, dueDate?.let { Timestamp(it) })
+            val newItem = todoDataViewModel.insertItem(title, detail, dueDate?.let { Timestamp(it) })
             loadItems()
         }
     }
@@ -67,9 +64,6 @@ class TodoListViewModel(
             loadItems()
         }
     }
-
-    fun showDialog() = _showDialogFlow.update { true }
-    fun hideDialog() = _showDialogFlow.update { false }
 
     fun complete(itemId: String) {
         viewModelScope.launch(Dispatchers.IO) {
