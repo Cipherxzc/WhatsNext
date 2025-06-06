@@ -26,36 +26,36 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.ItemDetailViewModel
+import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoDetailViewModel
 import com.cipherxzc.whatsnext.ui.core.common.LoadingScreen
 import java.text.SimpleDateFormat
 import java.util.Locale
 import androidx.compose.material3.OutlinedTextField
 
 @Composable
-fun ItemDetailScreen(itemDetailViewModel: ItemDetailViewModel) {
-    val isLoading by itemDetailViewModel.isLoadingFlow.collectAsState()
+fun TodoDetailScreen(todoDetailViewModel: TodoDetailViewModel) {
+    val isLoading by todoDetailViewModel.isLoadingFlow.collectAsState()
 
     DisposableEffect(Unit) {
         onDispose {
-            itemDetailViewModel.saveItem()
+            todoDetailViewModel.saveItem()
         }
     }
 
     if (isLoading){
         LoadingScreen()
     } else {
-        ItemDetailContent(itemDetailViewModel)
+        ItemDetailContent(todoDetailViewModel)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
-private fun ItemDetailContent(itemDetailViewModel: ItemDetailViewModel) {
-    val title       = itemDetailViewModel.titleFlow.collectAsState().value
-    val detail      = itemDetailViewModel.detailFlow.collectAsState().value
-    val dueDate     = itemDetailViewModel.dueDateFlow.collectAsState().value
-    val isCompleted = itemDetailViewModel.isCompletedFlow.collectAsState().value
+private fun ItemDetailContent(todoDetailViewModel: TodoDetailViewModel) {
+    val title       = todoDetailViewModel.titleFlow.collectAsState().value
+    val detail      = todoDetailViewModel.detailFlow.collectAsState().value
+    val dueDate     = todoDetailViewModel.dueDateFlow.collectAsState().value
+    val isCompleted = todoDetailViewModel.isCompletedFlow.collectAsState().value
 
     Scaffold(
         topBar = {
@@ -102,8 +102,8 @@ private fun ItemDetailContent(itemDetailViewModel: ItemDetailViewModel) {
                     val buttonText = if (isCompleted) "已完成" else "标记完成"
                     Button(
                         onClick = {
-                            if (isCompleted) itemDetailViewModel.withdraw()
-                            else             itemDetailViewModel.complete()
+                            if (isCompleted) todoDetailViewModel.withdraw()
+                            else             todoDetailViewModel.complete()
                         }
                     ) { Text(buttonText) }
                 }
@@ -114,7 +114,7 @@ private fun ItemDetailContent(itemDetailViewModel: ItemDetailViewModel) {
                 OutlinedTextField(
                     value = title,
                     onValueChange = { newTitle ->
-                        itemDetailViewModel.updateTitle(newTitle)
+                        todoDetailViewModel.updateTitle(newTitle)
                     },
                     placeholder = { Text("打算做点什么？") },
                     singleLine = true,
@@ -127,7 +127,7 @@ private fun ItemDetailContent(itemDetailViewModel: ItemDetailViewModel) {
                 OutlinedTextField(
                     value = detail,
                     onValueChange = { newDetail ->
-                        itemDetailViewModel.updateDetail(newDetail)
+                        todoDetailViewModel.updateDetail(newDetail)
                     },
                     placeholder = { Text("详细描述") },
                     modifier = Modifier

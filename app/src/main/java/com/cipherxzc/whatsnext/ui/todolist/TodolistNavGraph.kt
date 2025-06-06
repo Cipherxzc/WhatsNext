@@ -12,8 +12,8 @@ import androidx.navigation.navArgument
 import com.cipherxzc.whatsnext.ui.core.viewmodel.SyncViewModel
 import com.cipherxzc.whatsnext.ui.core.viewmodel.SyncViewModelFactory
 import com.cipherxzc.whatsnext.ui.core.viewmodel.TodoDataViewModel
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.ItemDetailViewModel
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.ItemDetailViewModelFactory
+import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoDetailViewModel
+import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoDetailViewModelFactory
 import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoListViewModel
 import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoListViewModelFactory
 
@@ -48,12 +48,12 @@ fun TodoListNavGraph(
             arguments = listOf(navArgument("itemId") { type = NavType.StringType })
         ) { backStackEntry ->
             val itemId = backStackEntry.arguments?.getString("itemId") ?: return@composable
-            val itemDetailViewModel: ItemDetailViewModel = viewModel(
+            val todoDetailViewModel: TodoDetailViewModel = viewModel(
                 viewModelStoreOwner = backStackEntry,
-                factory = ItemDetailViewModelFactory(todoDataViewModel, itemId)
+                factory = TodoDetailViewModelFactory(todoDataViewModel, itemId)
             )
 
-            ItemDetailScreen(itemDetailViewModel)
+            TodoDetailScreen(todoDetailViewModel)
         }
     }
 }

@@ -12,7 +12,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.util.Date
 
-class ItemDetailViewModel(
+class TodoDetailViewModel(
     private val todoDataViewModel: TodoDataViewModel,
     private val itemId: String
 ) : ViewModel() {
@@ -91,14 +91,14 @@ class ItemDetailViewModel(
     }
 }
 
-class ItemDetailViewModelFactory(
+class TodoDetailViewModelFactory(
     private val todoDataViewModel: TodoDataViewModel,
     private val itemId: String
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        require(modelClass == ItemDetailViewModel::class.java)
-        return ItemDetailViewModel(
+        require(modelClass == TodoDetailViewModel::class.java)
+        return TodoDetailViewModel(
             todoDataViewModel = todoDataViewModel,
             itemId = itemId
         ) as T
