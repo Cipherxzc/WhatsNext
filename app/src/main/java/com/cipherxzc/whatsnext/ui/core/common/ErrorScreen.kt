@@ -18,8 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 
+// TODO
 @Composable
-fun ErrorScreen(errorMessage: String) {
+fun ErrorScreen(errorMessage: String = "Unknown error") {
     Box(
         modifier = Modifier
             .fillMaxSize()

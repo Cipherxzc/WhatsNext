@@ -34,11 +34,7 @@ fun AuthNavGraph(
                 authState = state,
                 onSuccess = {
                     val userId = authViewModel.currentUser()?.uid
-                    if (userId == null) {
-                        // TODO: Handle error(根据我的理解，不可能出现这种情况)
-                        return@RegisterScreen
-                    }
-                    insertDefaultData(userId, onLoginSuccess)
+                    insertDefaultData(userId!!, onLoginSuccess)
                 }
             )
         }

@@ -28,14 +28,14 @@ class TodoRepository(
     suspend fun insertItem(
         userId: String,
         title: String,
-        description: String? = null,
+        detail: String = "",
         dueDate: Timestamp? = null
     ): TodoItem {
         val item = TodoItem(
             id = generateDocumentId(),
             userId = userId,
             title = title,
-            description = description,
+            detail = detail,
             dueDate = dueDate
         )
         insertOrUpdateItem(item)
@@ -45,7 +45,7 @@ class TodoRepository(
     private suspend fun modifyItem(
         id: String,
         title: String? = null,
-        description: String? = null,
+        detail: String? = null,
         dueDate: Timestamp? = null,
         isCompleted: Boolean? = null,
         isDeleted: Boolean? = null
@@ -54,7 +54,7 @@ class TodoRepository(
         item?.let {
             val updatedItem = it.copy(
                 title = title ?: it.title,
-                description = description ?: it.description,
+                detail = detail ?: it.detail,
                 dueDate = dueDate ?: it.dueDate,
                 isCompleted = isCompleted ?: it.isCompleted,
                 isDeleted = isDeleted ?: it.isDeleted,
@@ -69,10 +69,10 @@ class TodoRepository(
     suspend fun updateItem(
         id: String,
         title: String? = null,
-        description: String? = null,
+        detail: String? = null,
         dueDate: Timestamp? = null,
         isCompleted: Boolean? = null
-    ) = modifyItem(id, title, description, dueDate, isCompleted)
+    ) = modifyItem(id, title, detail, dueDate, isCompleted)
 
     suspend fun completeItem(id: String) = modifyItem(id, isCompleted = true)
     suspend fun uncompleteItem(id: String) = modifyItem(id, isCompleted = false)
@@ -100,12 +100,12 @@ class TodoRepository(
         insertItem(
             userId = userId,
             title = "学习如何使用 What's Next",
-            description = "这是一个默认的待办事项，您可以删除或修改它。"
+            detail = "这是一个默认的待办事项，您可以删除或修改它。"
         )
         insertItem(
             userId = userId,
             title = "添加您的第一个 Todo",
-            description = "点击右下角的加号按钮，开始添加您的第一个待办事项！"
+            detail = "点击右下角的加号按钮，开始添加您的第一个待办事项！"
         )
     }
 }

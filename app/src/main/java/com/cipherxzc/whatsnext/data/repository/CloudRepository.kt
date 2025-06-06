@@ -11,7 +11,7 @@ import kotlinx.coroutines.tasks.await
 @IgnoreExtraProperties
 data class TodoItemDto(
     var title: String = "",
-    var description: String? = null,
+    var detail: String = "",
     var dueDate: Timestamp? = null,
     var isCompleted: Boolean = false,
     // extra info
@@ -28,7 +28,7 @@ class CloudRepository(
 ) {
     private fun TodoItem.toDto(): TodoItemDto = TodoItemDto(
         title = title,
-        description = description,
+        detail = detail,
         dueDate = dueDate,
         isCompleted = isCompleted,
         lastModified = lastModified,
@@ -39,7 +39,7 @@ class CloudRepository(
         id = itemId,
         userId = userId,
         title = title,
-        description = description,
+        detail = detail,
         dueDate = dueDate,
         isCompleted = isCompleted,
         lastModified = lastModified,

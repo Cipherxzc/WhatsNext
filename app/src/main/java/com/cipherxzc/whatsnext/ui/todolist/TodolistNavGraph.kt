@@ -51,10 +51,9 @@ fun TodoListNavGraph(
             arguments = listOf(navArgument("itemId") { type = NavType.StringType })
         ) { backStackEntry ->
             val itemId = backStackEntry.arguments?.getString("itemId") ?: return@composable
-            ItemDetailScreen(
-                itemId = itemId,
-                itemDetailViewModel = itemDetailViewModel,
-            )
+            itemDetailViewModel.loadItem(itemId)
+            
+            ItemDetailScreen(itemDetailViewModel)
         }
     }
 }

@@ -42,14 +42,14 @@ class TodoDataViewModel(application: Application) : AndroidViewModel(application
 
     suspend fun insertItem(
         title: String,
-        description: String? = null,
+        detail: String = "",
         dueDate: Timestamp? = null,
         userId: String? = currentUserId
     ): TodoItem {
         if (userId == null) {
             throw IllegalStateException("Current user ID is not set")
         }
-        return todoRepo.insertItem(userId, title, description, dueDate)
+        return todoRepo.insertItem(userId, title, detail, dueDate)
     }
 
     fun insertDefaultData(onComplete: (() -> Unit)? = null, userId: String? = currentUserId) {
@@ -67,14 +67,20 @@ class TodoDataViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    fun updateItem(item: TodoItem) {
+    fun updateItem(
+        id: String,
+        title: String? = null,
+        detail: String? = null,
+        dueDate: Timestamp? = null,
+        isCompleted: Boolean? = null,
+    ) {
         viewModelScope.launch(Dispatchers.IO) {
             todoRepo.updateItem(
-                id = item.id,
-                title = item.title,
-                description = item.description,
-                dueDate = item.dueDate,
-                isCompleted = item.isCompleted,
+                id = id,
+                title = title,
+                detail = detail,
+                dueDate = dueDate,
+                isCompleted = isCompleted,
             )
         }
     }

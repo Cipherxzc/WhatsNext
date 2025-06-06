@@ -10,7 +10,7 @@ data class TodoItem (
     @PrimaryKey val id: String,
     val userId: String,
     val title: String,
-    val description: String? = null,
+    val detail: String = "",
     val dueDate: Timestamp? = null,
     val isCompleted: Boolean = false,
     val lastModified: Timestamp = Timestamp.now(),
