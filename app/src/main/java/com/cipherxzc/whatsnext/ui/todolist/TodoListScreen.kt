@@ -144,8 +144,8 @@ fun TodoListScreen(
                 .fillMaxSize()
                 .padding(innerPadding)
         ) {
-            TodoItemList(
-                itemListViewModel = todoListViewModel,
+            TodoList(
+                todoListViewModel = todoListViewModel,
                 onItemClicked = onItemClicked
             )
 
