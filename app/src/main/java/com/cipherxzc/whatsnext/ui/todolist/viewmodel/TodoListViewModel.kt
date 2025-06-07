@@ -9,7 +9,6 @@ import com.google.firebase.Timestamp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.util.Date
 
@@ -72,7 +71,7 @@ class TodoListViewModel(
         }
     }
 
-    fun withdraw(itemId: String) {
+    fun reset(itemId: String) {
         viewModelScope.launch(Dispatchers.IO) {
             todoDataViewModel.uncompleteItem(itemId)
             loadItems()

@@ -102,7 +102,7 @@ private fun ItemDetailContent(todoDetailViewModel: TodoDetailViewModel) {
                     val buttonText = if (isCompleted) "已完成" else "标记完成"
                     Button(
                         onClick = {
-                            if (isCompleted) todoDetailViewModel.withdraw()
+                            if (isCompleted) todoDetailViewModel.reset()
                             else             todoDetailViewModel.complete()
                         }
                     ) { Text(buttonText) }

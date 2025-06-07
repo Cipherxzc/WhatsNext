@@ -74,7 +74,7 @@ class TodoDetailViewModel(
         isModified = true
     }
 
-    fun withdraw() {
+    fun reset() {
         _isCompletedFlow.value = false
         isModified = true
     }

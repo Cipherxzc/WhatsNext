@@ -1,43 +1,37 @@
 package com.cipherxzc.whatsnext.ui.todolist
 
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutVertically
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
-import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
+import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.rememberDismissState
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -47,8 +41,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.cipherxzc.whatsnext.data.database.TodoItem
 import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoListViewModel
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -62,224 +60,173 @@ fun TodoList(
     val todoItems by todoListViewModel.todoItemsFlow.collectAsState()
     val completedItems by todoListViewModel.completedItemsFlow.collectAsState()
 
-    LazyColumn(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
+            .verticalScroll(rememberScrollState())
     ) {
-        // 未打卡列表部分
-        if (unClockedInItems.isNotEmpty()) {
-            item {
-                Text(
-                    text = "未打卡",
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-            }
-            items(unClockedInItems, key = { it.itemId }) { item ->
-                AnimatedVisibility(
-                    visible = true,
-                    enter = slideInVertically() + fadeIn(),
-                    exit = slideOutVertically() + fadeOut()
-                ) {
-                    ItemEntry(
-                        modifier = Modifier.animateItem(),
-                        item = item,
-                        onItemClicked = onItemClicked,
-                        onDismiss = todoListViewModel::clockIn,
-                        onDelete = todoListViewModel::deleteItem,
-                        reverseSwipe = false
-                    ) {
-                        // 定义在滑动时显示的背景区域
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    color = MaterialTheme.colorScheme.secondaryContainer,
-                                    shape = RoundedCornerShape(6.dp)
-                                )
-                                .padding(horizontal = 20.dp),
-                            contentAlignment = Alignment.CenterEnd
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Done,
-                                contentDescription = "打卡"
-                            )
-                        }
-                    }
-                }
-            }
+        CollapsibleItemList(
+            title = "⏰ 逾期任务",
+            items = overdueItems,
+            onItemClicked = onItemClicked,
+            onDismiss = { todoListViewModel.complete(it) },
+            type = BackgroundType.Complete
+        )
+
+        CollapsibleItemList(
+            title = "📝 待完成任务",
+            items = todoItems,
+            onItemClicked = onItemClicked,
+            onDismiss = { todoListViewModel.complete(it) },
+            type = BackgroundType.Complete
+        )
+
+        CollapsibleItemList(
+            title = "✅ 已完成任务",
+            items = completedItems,
+            onItemClicked = onItemClicked,
+            onDismiss = { todoListViewModel.reset(it) },
+            type = BackgroundType.Reset
+        )
+    }
+}
+
+internal enum class BackgroundType {
+    Complete, // 绿底 + 勾
+    Reset     // 黄底 + 重置图标
+}
+
+@Composable
+internal fun CollapsibleItemList(
+    title: String,
+    items: List<TodoItem>,
+    onItemClicked: (String) -> Unit,
+    onDismiss: (String) -> Unit,
+    type: BackgroundType
+) {
+    var expanded by remember { mutableStateOf(true) }
+
+    Column(modifier = Modifier.fillMaxWidth()) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { expanded = !expanded }
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.weight(1f)
+            )
+            Icon(
+                imageVector = if (expanded) Icons.Default.KeyboardArrowDown else Icons.AutoMirrored.Filled.KeyboardArrowLeft,
+                contentDescription = if (expanded) "折叠" else "展开"
+            )
         }
-        // 已打卡列表部分
-        if (clockedInItems.isNotEmpty()) {
-            item {
-                Spacer(modifier = Modifier.height(16.dp))
-                Text(
-                    text = "已打卡",
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-            }
-            items(clockedInItems, key = { it.itemId }) { item ->
-                AnimatedVisibility(
-                    visible = true,
-                    enter = slideInVertically() + fadeIn(),
-                    exit = slideOutVertically() + fadeOut()
-                ) {
-                    ItemEntry(
+
+        AnimatedVisibility(  // 添加动画
+            visible = expanded,
+            enter = expandVertically(),
+            exit = shrinkVertically()
+        ) {
+            LazyColumn(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .heightIn(max = Dp.Infinity)
+                    .fillMaxWidth(),
+                userScrollEnabled = false
+            ) {
+                items(items, key = {it.id}) { item ->
+                    ItemCard(
                         modifier = Modifier.animateItem(),
                         item = item,
-                        onItemClicked = onItemClicked,
-                        onDismiss = todoListViewModel::withdraw,
-                        onDelete = todoListViewModel::deleteItem,
-                        reverseSwipe = true
-                    ) {
-                        // 定义在滑动时显示的背景区域
-                        Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(
-                                    color = MaterialTheme.colorScheme.error,
-                                    shape = RoundedCornerShape(6.dp)
-                                )
-                                .padding(horizontal = 20.dp),
-                            contentAlignment = Alignment.CenterStart
-                        ) {
-                            Icon(
-                                imageVector = Icons.Filled.Clear,
-                                contentDescription = "撤销打卡"
-                            )
-                        }
-                    }
+                        onItemClicked = { onItemClicked(item.id) },
+                        onDismiss = { onDismiss(item.id) },
+                        type = type
+                    )
                 }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun ItemEntry(
-    modifier: Modifier,
-    item: ClockInItem,
-    onItemClicked: (String) -> Unit,
-    onDismiss: (String) -> Unit,
-    onDelete: (String) -> Unit,
-    reverseSwipe: Boolean = false,
-    background: @Composable RowScope.()->Unit
+internal fun ItemCard(
+    modifier: Modifier = Modifier,
+    item: TodoItem,
+    onItemClicked: () -> Unit,
+    onDismiss: () -> Unit,
+    type: BackgroundType
 ) {
-    var showDeleteDialog by remember { mutableStateOf(false) }
-
-    // 删除确认对话框
-    if (showDeleteDialog) {
-        AlertDialog(
-            onDismissRequest = { showDeleteDialog = false },
-            title = { Text("删除条目") },
-            text = { Text("确定要永久删除该条目吗？此操作不可撤销。") },
-            confirmButton = {
-                TextButton(
-                    onClick = {
-                        onDelete(item.itemId)
-                        showDeleteDialog = false
-                    }
-                ) {
-                    Text("删除")
-                }
-            },
-            dismissButton = {
-                TextButton(
-                    onClick = { showDeleteDialog = false }
-                ) {
-                    Text("取消")
-                }
-            }
-        )
+    // 根据类型选择背景色和图标
+    val (backgroundColor, icon) = when (type) {
+        BackgroundType.Complete ->
+            Color(0xFF4CAF50) to Icons.Default.Check
+        BackgroundType.Reset ->
+            Color(0xFFFFC107) to Icons.Default.Refresh
     }
-    // 使用 SwipeToDismiss 来包装整个列表项
+    val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA) }
+
+    // 左滑过程中的滑动比例，用于做背景透明度等动画
     val dismissState = rememberDismissState(
-        confirmStateChange = { dismissValue ->
-            // 根据滑动方向判断是到start还是end
-            if (!reverseSwipe) {
-                // 从右往左滑 DismissDirection.EndToStart
-                if (dismissValue == DismissValue.DismissedToStart) {
-                    onDismiss(item.itemId)
-                }
-            } else {
-                // 从左往右滑 DismissDirection.StartToEnd
-                if (dismissValue == DismissValue.DismissedToEnd) {
-                    onDismiss(item.itemId)
-                }
+        confirmStateChange = {
+            if (it == DismissValue.DismissedToEnd) {
+                onDismiss()
             }
-            // 不能使用true，因为我已经自己删除了打卡项，返回true会导致二次删除引起ui出错！！！
             false
         }
     )
+    val progress by animateFloatAsState(
+        targetValue = dismissState.progress.fraction
+    )
 
-    // 根据 reverseSwipe 来设定滑动方向
-    val directions = if (!reverseSwipe) {
-        setOf(DismissDirection.EndToStart)
-    } else {
-        setOf(DismissDirection.StartToEnd)
-    }
 
-    Surface(
-        modifier = Modifier
-            .combinedClickable(
-                onClick = { onItemClicked(item.itemId) },
-                onLongClick = { showDeleteDialog = true }
-            ),
-        color = Color.Transparent,
-    ) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(vertical = 4.dp),
-            shape = MaterialTheme.shapes.medium,
-            elevation = CardDefaults.cardElevation(2.dp)
-        ) {
-            SwipeToDismiss(
-                state = dismissState,
-                directions = directions,
-                background = background,
-                dismissContent = {
-                    // 列表项的主要内容
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                MaterialTheme.colorScheme.surface,
-                                shape = RoundedCornerShape(6.dp)
-                            )
-                            .padding(8.dp)  // 添加内边距使整体效果更好
-                    ) {
-                        // 第一行: 条目名称与详情按钮
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween,
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = item.name,
-                                modifier = Modifier.padding(horizontal = 8.dp, vertical = 12.dp)
-                            )
-                            IconButton(onClick = { onItemClicked(item.itemId) }) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Filled.List,
-                                    contentDescription = "查看详情"
-                                )
-                            }
-                        }
-                        // 第二行: 打卡天数标识
+    SwipeToDismiss(
+        state = dismissState,
+        directions = setOf(DismissDirection.StartToEnd),
+        background = {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(backgroundColor.copy(alpha = 0.5f + 0.5f * progress))
+                    .padding(horizontal = 20.dp),
+                contentAlignment = Alignment.CenterStart
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = Color.White.copy(alpha = progress)
+                )
+            }
+        },
+        dismissContent = {
+            Card(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .clickable(onClick = onItemClicked)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    // 标题占比大部分
+                    Text(
+                        text = item.title,
+                        modifier = Modifier.weight(1f)
+                    )
+                    // 如果有截止日期就显示
+                    item.dueDate?.let { ts ->
                         Text(
-                            text = "已打卡 ${item.clockInCount} 天",
-                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 4.dp),
-                            style = MaterialTheme.typography.bodySmall,
-                            color = MaterialTheme.colorScheme.primary
+                            text = dateFormat.format(ts.toDate()),
                         )
                     }
-                },
-                modifier = modifier
-            )
-
-            Spacer(modifier = Modifier.height(6.dp))
+                }
+            }
         }
-    }
+    )
 }
