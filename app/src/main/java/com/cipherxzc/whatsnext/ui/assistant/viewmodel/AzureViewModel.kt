@@ -17,7 +17,7 @@ class AzureViewModel(
 
     private val azureRepository = AzureRepository()
 
-    suspend fun whatsNext(): List<Pair<TodoItem, String>> {
+    suspend fun whatsNext(): List<Pair<TodoItem, String>>? {
         val allItems = todoDataViewModel.getAllItems()
         val todoItems = allItems.filter { !it.isCompleted }
 
@@ -44,8 +44,13 @@ class AzureViewModel(
     
         List up to THREE items in the order you recommend tackling them.
         """.trimIndent()
+        azureRepository.setSystemPrompt(systemPrompt)
 
-        val response = azureRepository.sendToLLM(systemPrompt = systemPrompt)
+        val response = azureRepository.sendToLLM(asJson = true)
+
+        if (response == "timeout"){
+            return null
+        }
 
         return try {
             @Serializable data class Choice(val id: String, val reason: String)

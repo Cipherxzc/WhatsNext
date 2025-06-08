@@ -2,6 +2,7 @@ package com.cipherxzc.whatsnext.data.repository
 
 import com.aallam.openai.api.chat.ChatCompletionRequest
 import com.aallam.openai.api.chat.ChatMessage
+import com.aallam.openai.api.chat.ChatResponseFormat
 import com.aallam.openai.api.chat.ChatRole
 import com.aallam.openai.api.model.ModelId
 import com.aallam.openai.client.OpenAI
@@ -10,7 +11,9 @@ import com.aallam.openai.client.OpenAIHost
 import com.cipherxzc.whatsnext.BuildConfig
 import com.cipherxzc.whatsnext.data.database.TodoItem
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.TimeoutCancellationException
 import kotlinx.coroutines.withContext
+import kotlinx.coroutines.withTimeout
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -28,7 +31,7 @@ private data class AzureTodoItemDto(
 
 class AzureRepository() {
     private val azureKey = BuildConfig.AZURE_OPENAI_API_KEY
-    private val azureEndpoint = BuildConfig.AZURE_OPENAI_ENDPOINT
+    private val azureResourceName = BuildConfig.AZURE_OPENAI_RESOURCE_NAME
     private val deploymentId = BuildConfig.AZURE_OPENAI_DEPLOYMENT_ID
     private val apiVersion = BuildConfig.AZURE_OPENAI_API_VERSION
 
@@ -36,7 +39,7 @@ class AzureRepository() {
         config = OpenAIConfig(
             token = azureKey,
             host = OpenAIHost.azure(
-                resourceName = azureEndpoint,
+                resourceName = azureResourceName,
                 deploymentId = deploymentId,
                 apiVersion = apiVersion
             )
@@ -58,8 +61,12 @@ class AzureRepository() {
     }
 
     private val promptBuilder = StringBuilder()
+    private var systemPrompt: String = ""
 
     fun clearPrompt() = promptBuilder.clear()
+    fun setSystemPrompt(prompt: String) {
+        systemPrompt = prompt
+    }
 
     // 以纯文本追加到 prompt（自动换行）
     fun append(text: String) = promptBuilder.appendLine(text.trimEnd())
@@ -78,24 +85,63 @@ class AzureRepository() {
         promptBuilder.appendLine(jsonArray)
     }
 
-    suspend fun sendToLLM(
-        systemPrompt: String? = null,
-        maxTokens: Int = 512
-    ): String = withContext(Dispatchers.IO) {
+    private val history: ArrayDeque<Pair<String, String>> = ArrayDeque()
+    private var maxHistory = 10
 
+    fun clearHistory() = history.clear()
+
+    private fun trimHistory() {
+        while (history.size > maxHistory) {
+            history.removeFirst()
+        }
+    }
+
+    private fun addHistory(user: String, assistant: String) {
+        history.addLast(user to assistant)
+        trimHistory()
+    }
+
+    suspend fun sendToLLM(
+        maxTokens: Int = 512,
+        temperature: Double = 0.7,
+        timeoutMillis: Long = 10000L,
+        asJson: Boolean = false
+    ): String = withContext(Dispatchers.IO) {
         val userPrompt = promptBuilder.toString().trim()
+
+        val messages = buildList {
+            add(ChatMessage(ChatRole.System, systemPrompt))
+
+            // history
+            history.forEach { (user, assistant) ->
+                add(ChatMessage(ChatRole.User, user))
+                add(ChatMessage(ChatRole.Assistant, assistant))
+            }
+
+            add(ChatMessage(ChatRole.User, userPrompt))
+        }
 
         val request = ChatCompletionRequest(
             model = ModelId(deploymentId),
-            messages = buildList {
-                if (systemPrompt != null) add(ChatMessage(ChatRole.System, systemPrompt))
-                add(ChatMessage(ChatRole.User, userPrompt))
-            },
+            messages = messages,
             maxCompletionTokens = maxTokens,
-            temperature = 0.7
+            temperature = temperature,
+            responseFormat = if (asJson) ChatResponseFormat.JsonObject else null
         )
 
-        val response = client.chatCompletion(request)
-        response.choices.first().message.content.toString()
+        try {
+            val response = withTimeout(timeoutMillis) {
+                client.chatCompletion(request)
+            }
+
+            val reply = response.choices.first().message.content.orEmpty()
+
+            // 请求成功后写入历史
+            addHistory(userPrompt, reply)
+
+            reply
+        } catch (e: TimeoutCancellationException) {
+            "timeout"
+        }
     }
 }

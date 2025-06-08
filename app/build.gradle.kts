@@ -29,7 +29,7 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         buildConfigField("String", "AZURE_OPENAI_API_KEY", "\"${localProps["AZURE_OPENAI_API_KEY"]}\"")
-        buildConfigField("String", "AZURE_OPENAI_ENDPOINT", "\"${localProps["AZURE_OPENAI_ENDPOINT"]}\"")
+        buildConfigField("String", "AZURE_OPENAI_RESOURCE_NAME", "\"${localProps["AZURE_OPENAI_RESOURCE_NAME"]}\"")
         buildConfigField("String", "AZURE_OPENAI_DEPLOYMENT_ID", "\"${localProps["AZURE_OPENAI_DEPLOYMENT_ID"]}\"")
         buildConfigField("String", "AZURE_OPENAI_API_VERSION", "\"${localProps["AZURE_OPENAI_API_VERSION"]}\"")
     }
