@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "603815289806",
+    "project_id": "whatsnext-d6c7f",
+    "storage_bucket": "whatsnext-d6c7f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:603815289806:android:3a9f2708c637cfda50819f",
+        "android_client_info": {
+          "package_name": "com.cipherxzc.whatsnext"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC4sZ_LMZMUiECLFswFbRYQoI44LpTiQvA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

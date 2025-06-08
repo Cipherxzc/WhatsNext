@@ -88,7 +88,7 @@ class TodoDataViewModel(application: Application) : AndroidViewModel(application
     suspend fun deleteItem(itemId: String) = todoRepo.deleteItem(itemId)
 
     suspend fun completeItem(itemId: String) = todoRepo.completeItem(itemId)
-    suspend fun uncompleteItem(itemId: String) = todoRepo.uncompleteItem(itemId)
+    suspend fun unCompleteItem(itemId: String) = todoRepo.unCompleteItem(itemId)
 
     suspend fun getItem(itemId: String): TodoItem? {
         return todoRepo.getItemById(itemId)

@@ -17,13 +17,20 @@ class TodoListViewModel(
 ) : ViewModel() {
 
     private val _overdueItemsFlow = MutableStateFlow<List<TodoItem>>(emptyList())
-    val overdueItemsFlow: StateFlow<List<TodoItem>> = _overdueItemsFlow
-
     private val _todoItemsFlow = MutableStateFlow<List<TodoItem>>(emptyList())
-    val todoItemsFlow: StateFlow<List<TodoItem>> = _todoItemsFlow
-
     private val _completedItemsFlow = MutableStateFlow<List<TodoItem>>(emptyList())
+
+    val overdueItemsFlow: StateFlow<List<TodoItem>> = _overdueItemsFlow
+    val todoItemsFlow: StateFlow<List<TodoItem>> = _todoItemsFlow
     val completedItemsFlow: StateFlow<List<TodoItem>> = _completedItemsFlow
+
+    val _overdueExpendFlow = MutableStateFlow(true)
+    val _todoExpendFlow = MutableStateFlow(true)
+    val _completedExpendFlow = MutableStateFlow(false)
+
+    val overdueExpendFlow: StateFlow<Boolean> = _overdueExpendFlow
+    val todoExpendFlow: StateFlow<Boolean> = _todoExpendFlow
+    val completedExpendFlow: StateFlow<Boolean> = _completedExpendFlow
 
     private val _isLoadingFlow = MutableStateFlow(false)
     val isLoadingFlow: StateFlow<Boolean> = _isLoadingFlow
@@ -73,8 +80,16 @@ class TodoListViewModel(
 
     fun reset(itemId: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            todoDataViewModel.uncompleteItem(itemId)
+            todoDataViewModel.unCompleteItem(itemId)
             loadItems()
+        }
+    }
+
+    fun expand(type: String) {
+        when (type) {
+            "overdue" -> _overdueExpendFlow.value = !_overdueExpendFlow.value
+            "todo" -> _todoExpendFlow.value = !_todoExpendFlow.value
+            "completed" -> _completedExpendFlow.value = !_completedExpendFlow.value
         }
     }
 }

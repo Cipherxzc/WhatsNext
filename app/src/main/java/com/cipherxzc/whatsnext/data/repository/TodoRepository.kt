@@ -75,7 +75,7 @@ class TodoRepository(
     ) = modifyItem(id, title, detail, dueDate, isCompleted)
 
     suspend fun completeItem(id: String) = modifyItem(id, isCompleted = true)
-    suspend fun uncompleteItem(id: String) = modifyItem(id, isCompleted = false)
+    suspend fun unCompleteItem(id: String) = modifyItem(id, isCompleted = false)
     suspend fun deleteItem(id: String) = modifyItem(id, isDeleted = true)
 
     suspend fun removeItem(id: String) = withContext(Dispatchers.IO){
