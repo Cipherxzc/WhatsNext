@@ -44,11 +44,14 @@ class AzureRepository() {
     )
 
     private fun TodoItem.toPromptJson(): String {
+        val dueDateStr: String? = dueDate
+            ?.toDate()
+            ?.let { SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA).format(it) }
         val promptItem = AzureTodoItemDto(
             id = id,
             title = title,
             detail = detail,
-            dueDate = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA).format(dueDate?.toDate()?.toString()),
+            dueDate = dueDateStr,
             importance = importance
         )
         return Json.encodeToString(promptItem)

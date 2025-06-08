@@ -1,6 +1,7 @@
 package com.cipherxzc.whatsnext.ui.assistant.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.cipherxzc.whatsnext.data.database.TodoItem
 import com.cipherxzc.whatsnext.data.repository.AzureRepository
 import com.cipherxzc.whatsnext.ui.core.viewmodel.TodoDataViewModel
@@ -56,5 +57,15 @@ class AzureViewModel(
         } catch (e: Exception) {
             emptyList()
         }
+    }
+}
+
+class AzureViewModelFactory(
+    private val todoDataViewModel: TodoDataViewModel
+) : ViewModelProvider.Factory {
+    @Suppress("UNCHECKED_CAST")
+    override fun <T : ViewModel> create(modelClass: Class<T>): T {
+        require(modelClass == AzureViewModel::class.java)
+        return AzureViewModel(todoDataViewModel) as T
     }
 }

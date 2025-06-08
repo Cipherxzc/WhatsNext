@@ -5,17 +5,22 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.cipherxzc.whatsnext.ui.assistant.viewmodel.AzureViewModel
+import com.cipherxzc.whatsnext.ui.assistant.viewmodel.AzureViewModelFactory
 import com.cipherxzc.whatsnext.ui.auth.AuthNavGraph
 import com.cipherxzc.whatsnext.ui.auth.viewmodel.AuthViewModel
 import com.cipherxzc.whatsnext.ui.core.common.ErrorScreen
-import com.cipherxzc.whatsnext.ui.todolist.TodoListNavGraph
 import com.cipherxzc.whatsnext.ui.core.viewmodel.TodoDataViewModel
+import com.cipherxzc.whatsnext.ui.todolist.TodoListNavGraph
 
 @Composable
 fun WhatsNextApp() {
     val navController = rememberNavController()
     val authViewModel: AuthViewModel = viewModel()
     val todoDataViewModel: TodoDataViewModel = viewModel()
+    val azureViewModel: AzureViewModel = viewModel(
+        factory = AzureViewModelFactory(todoDataViewModel)
+    )
 
     val startRoute = if (authViewModel.currentUser() != null) "main" else "auth"
 
@@ -44,6 +49,7 @@ fun WhatsNextApp() {
                 TodoListNavGraph(
                     userName = currentUser.displayName ?: "tourist",
                     todoDataViewModel = todoDataViewModel,
+                    azureViewModel = azureViewModel,
                     onLogout = {
                         authViewModel.logout()
                         todoDataViewModel.resetCurrentUser()

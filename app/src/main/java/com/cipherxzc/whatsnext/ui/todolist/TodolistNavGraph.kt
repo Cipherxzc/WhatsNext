@@ -9,6 +9,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.cipherxzc.whatsnext.ui.assistant.viewmodel.AzureViewModel
 import com.cipherxzc.whatsnext.ui.core.viewmodel.SyncViewModel
 import com.cipherxzc.whatsnext.ui.core.viewmodel.SyncViewModelFactory
 import com.cipherxzc.whatsnext.ui.core.viewmodel.TodoDataViewModel
@@ -21,6 +22,7 @@ import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoListViewModelFactory
 fun TodoListNavGraph(
     userName: String,
     todoDataViewModel: TodoDataViewModel,
+    azureViewModel: AzureViewModel,
     onLogout: () -> Unit
 ){
     val todoListViewModel: TodoListViewModel = viewModel(
@@ -37,6 +39,7 @@ fun TodoListNavGraph(
             TodoListScreen(
                 userName = userName,
                 todoListViewModel = todoListViewModel,
+                azureViewModel = azureViewModel,
                 syncViewModel = syncViewModel,
                 onItemClicked = { itemId ->
                     navController.navigate("itemDetail/$itemId")
