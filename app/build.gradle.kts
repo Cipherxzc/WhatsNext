@@ -1,10 +1,19 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     id("kotlin-kapt")
     id("com.google.gms.google-services")
+    kotlin("plugin.serialization") version "1.9.22"
 }
+
+val localProps = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
+
+android.buildFeatures.buildConfig = true
 
 android {
     namespace = "com.cipherxzc.whatsnext"
@@ -18,6 +27,11 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField("String", "AZURE_OPENAI_API_KEY", "\"${localProps["AZURE_OPENAI_API_KEY"]}\"")
+        buildConfigField("String", "AZURE_OPENAI_ENDPOINT", "\"${localProps["AZURE_OPENAI_ENDPOINT"]}\"")
+        buildConfigField("String", "AZURE_OPENAI_DEPLOYMENT_ID", "\"${localProps["AZURE_OPENAI_DEPLOYMENT_ID"]}\"")
+        buildConfigField("String", "AZURE_OPENAI_API_VERSION", "\"${localProps["AZURE_OPENAI_API_VERSION"]}\"")
     }
 
     buildTypes {
@@ -57,6 +71,10 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.material)
+    implementation(libs.kotlinx.serialization.json)
+    implementation(libs.openai.client.bom)
+    implementation(libs.openai.client)
+    runtimeOnly(libs.ktor.client.okhttp)
     kapt(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -9,7 +9,7 @@ import kotlinx.coroutines.tasks.await
 
 // Data Transfer Object for Firestore
 @IgnoreExtraProperties
-data class TodoItemDto(
+private data class TodoItemDto(
     var title: String = "",
     var detail: String = "",
     var dueDate: Timestamp? = null,
