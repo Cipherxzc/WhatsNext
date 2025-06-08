@@ -16,14 +16,14 @@ import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
 @Serializable
-private data class TodoItemDto(
+private data class AzureTodoItemDto(
     val title: String,
     val detail: String,
     val dueDate: String? = null, // ISO-8601 格式
     val importance: Int = 0
 )
 
-class OpenAIRepository() {
+class AzureRepository() {
     private val azureKey = BuildConfig.AZURE_OPENAI_API_KEY
     private val azureEndpoint = BuildConfig.AZURE_OPENAI_ENDPOINT
     private val deploymentId = BuildConfig.AZURE_OPENAI_DEPLOYMENT_ID
@@ -41,7 +41,7 @@ class OpenAIRepository() {
     )
 
     private fun TodoItem.toPromptJson(): String {
-        val promptItem = TodoItemDto(
+        val promptItem = AzureTodoItemDto(
             title = title,
             detail = detail,
             dueDate = dueDate?.toDate()?.toString(), // 可用 ISO-8601 日期格式

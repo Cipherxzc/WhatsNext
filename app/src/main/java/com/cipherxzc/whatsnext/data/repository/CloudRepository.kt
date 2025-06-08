@@ -9,7 +9,7 @@ import kotlinx.coroutines.tasks.await
 
 // Data Transfer Object for Firestore
 @IgnoreExtraProperties
-private data class TodoItemDto(
+private data class FirestoreTodoItemDto(
     var title: String = "",
     var detail: String = "",
     var dueDate: Timestamp? = null,
@@ -26,7 +26,7 @@ private data class TodoItemDto(
 class CloudRepository(
     private val firestore: FirebaseFirestore
 ) {
-    private fun TodoItem.toDto(): TodoItemDto = TodoItemDto(
+    private fun TodoItem.toDto(): FirestoreTodoItemDto = FirestoreTodoItemDto(
         title = title,
         detail = detail,
         dueDate = dueDate,
@@ -35,7 +35,7 @@ class CloudRepository(
         isDeleted = isDeleted
     )
 
-    private fun TodoItemDto.toEntity(itemId: String, userId: String): TodoItem = TodoItem(
+    private fun FirestoreTodoItemDto.toEntity(itemId: String, userId: String): TodoItem = TodoItem(
         id = itemId,
         userId = userId,
         title = title,
@@ -71,7 +71,7 @@ class CloudRepository(
             .await()
 
         return snapshot.documents.map { doc ->
-            val dto = doc.toObject(TodoItemDto::class.java) ?: return@map null
+            val dto = doc.toObject(FirestoreTodoItemDto::class.java) ?: return@map null
             dto.toEntity(itemId = doc.id, userId = userId)
         }.filterNotNull()
     }
