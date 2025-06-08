@@ -1,5 +1,6 @@
 package com.cipherxzc.whatsnext.ui.todolist
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -33,13 +34,20 @@ import java.util.Locale
 import androidx.compose.material3.OutlinedTextField
 
 @Composable
-fun TodoDetailScreen(todoDetailViewModel: TodoDetailViewModel) {
+fun TodoDetailScreen(
+    todoDetailViewModel: TodoDetailViewModel,
+    onBack: () -> Unit
+) {
     val isLoading by todoDetailViewModel.isLoadingFlow.collectAsState()
 
     DisposableEffect(Unit) {
         onDispose {
             todoDetailViewModel.saveItem()
         }
+    }
+
+    BackHandler {
+        onBack()
     }
 
     if (isLoading){

@@ -33,6 +33,7 @@ fun TodoListNavGraph(
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "itemList") {
         composable("itemList") {
+            todoListViewModel.loadItems()
             TodoListScreen(
                 userName = userName,
                 todoListViewModel = todoListViewModel,
@@ -53,7 +54,13 @@ fun TodoListNavGraph(
                 factory = TodoDetailViewModelFactory(todoDataViewModel, itemId)
             )
 
-            TodoDetailScreen(todoDetailViewModel)
+            TodoDetailScreen(
+                todoDetailViewModel = todoDetailViewModel,
+                onBack = {
+                    todoDetailViewModel.saveItem()
+                    navController.popBackStack()
+                }
+            )
         }
     }
 }
