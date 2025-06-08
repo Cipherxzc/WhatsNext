@@ -14,8 +14,12 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.cipherxzc.whatsnext.ui.core.common.DatePickerDialog
 import com.cipherxzc.whatsnext.ui.todolist.viewmodel.AddTodoViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -24,14 +28,16 @@ import java.util.Locale
 fun AddTodoDialog(
     addTodoViewModel: AddTodoViewModel
 ){
-    val showDialogState by addTodoViewModel.showDialogFlow.collectAsState()
+    val showDialog by addTodoViewModel.showDialogFlow.collectAsState()
 
     val newTitle by addTodoViewModel.titleFlow.collectAsState()
     val newDetail by addTodoViewModel.detailFlow.collectAsState()
     val newDueDate by addTodoViewModel.dueDateFlow.collectAsState()
 
+    var showCalendar by remember { mutableStateOf(false) }
+
     // 当 showAddDialog 为 true 时显示 AlertDialog 对话框
-    if (showDialogState) {
+    if (showDialog) {
         AlertDialog(
             onDismissRequest = addTodoViewModel::hideDialog,
             shape = MaterialTheme.shapes.large,
@@ -71,8 +77,18 @@ fun AddTodoDialog(
                         text = newDueDate?.let { SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA).format(it) } ?: "设置截止日期",
                         style = MaterialTheme.typography.titleMedium,
                         modifier = Modifier.clickable {
-                            // TODO: 打开 DatePickerDialog
+                            showCalendar = true
                         }
+                    )
+                }
+
+                if (showCalendar) {
+                    DatePickerDialog(
+                        onDateSelected = { date ->
+                            addTodoViewModel.setDueDate(date)
+                        },
+                        onDismissRequest = { showCalendar = false },
+                        initialDate = newDueDate
                     )
                 }
             },
