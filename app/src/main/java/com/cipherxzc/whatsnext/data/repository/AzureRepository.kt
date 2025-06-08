@@ -14,13 +14,16 @@ import kotlinx.coroutines.withContext
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @Serializable
 private data class AzureTodoItemDto(
+    val id: String,
     val title: String,
     val detail: String,
     val dueDate: String? = null, // ISO-8601 格式
-    val importance: Int = 0
+    val importance: Int? = null
 )
 
 class AzureRepository() {
@@ -42,9 +45,10 @@ class AzureRepository() {
 
     private fun TodoItem.toPromptJson(): String {
         val promptItem = AzureTodoItemDto(
+            id = id,
             title = title,
             detail = detail,
-            dueDate = dueDate?.toDate()?.toString(), // 可用 ISO-8601 日期格式
+            dueDate = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA).format(dueDate?.toDate()?.toString()),
             importance = importance
         )
         return Json.encodeToString(promptItem)

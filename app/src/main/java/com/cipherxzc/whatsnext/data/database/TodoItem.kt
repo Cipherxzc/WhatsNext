@@ -12,7 +12,7 @@ data class TodoItem (
     val title: String,
     val detail: String = "",
     val dueDate: Timestamp? = null,
-    val importance: Int = 0, // 0 ~ 10
+    val importance: Int? = null, // 0 ~ 10
     val isCompleted: Boolean = false,
     // 同步信息
     val lastModified: Timestamp = Timestamp.now(),
