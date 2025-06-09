@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -74,6 +75,7 @@ internal fun ItemCard(
         false
     }
     val progress by animateFloatAsState(dismissState.progress.fraction)
+    val dismissThreshold = remember { 0.6f }
 
     Card(
         modifier = modifier
@@ -83,6 +85,7 @@ internal fun ItemCard(
         SwipeToDismiss(
             state = dismissState,
             directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
+            dismissThresholds = { direction -> FractionalThreshold(dismissThreshold) },
             background = {
                 val direction = dismissState.dismissDirection
                 when (direction) {
@@ -95,7 +98,7 @@ internal fun ItemCard(
                                 .padding(horizontal = 20.dp),
                             contentAlignment = Alignment.CenterStart
                         ) {
-                            Icon(icon, contentDescription = null, tint = Color.White.copy(alpha = progress))
+                            Icon(icon, contentDescription = null, tint = Color.White.copy(alpha = if (progress > dismissThreshold) 1f else 0f))
                         }
                     }
                     DismissDirection.EndToStart -> {
@@ -107,7 +110,7 @@ internal fun ItemCard(
                                 .padding(horizontal = 20.dp),
                             contentAlignment = Alignment.CenterEnd
                         ) {
-                            Icon(Icons.Default.Delete, contentDescription = "delete", tint = Color.White.copy(alpha = progress))
+                            Icon(Icons.Default.Delete, contentDescription = "delete", tint = Color.White.copy(alpha = if (progress > dismissThreshold) 1f else 0f))
                         }
                     }
                     else -> {}
