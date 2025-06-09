@@ -4,10 +4,12 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.DismissDirection
 import androidx.compose.material.DismissValue
@@ -48,7 +50,8 @@ internal fun ItemCard(
     type: CardType,
     onItemClicked: () -> Unit,
     onDismiss: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    content: @Composable () -> Unit = {}
 ) {
     // 根据类型选择背景色和图标
     val (backgroundColor, icon) = when (type) {
@@ -79,10 +82,11 @@ internal fun ItemCard(
 
     Card(
         modifier = modifier
-            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .padding(horizontal = 0.dp, vertical = 8.dp)
             .clickable(onClick = onItemClicked)
     ) {
         SwipeToDismiss(
+            modifier = Modifier.fillMaxWidth(),
             state = dismissState,
             directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
             dismissThresholds = { direction -> FractionalThreshold(dismissThreshold) },
@@ -98,9 +102,14 @@ internal fun ItemCard(
                                 .padding(horizontal = 20.dp),
                             contentAlignment = Alignment.CenterStart
                         ) {
-                            Icon(icon, contentDescription = null, tint = Color.White.copy(alpha = if (progress > dismissThreshold) 1f else 0f))
+                            Icon(
+                                icon,
+                                contentDescription = null,
+                                tint = Color.White.copy(alpha = if (progress > dismissThreshold) 1f else 0f)
+                            )
                         }
                     }
+
                     DismissDirection.EndToStart -> {
                         // 左滑背景（删除）
                         Box(
@@ -110,32 +119,45 @@ internal fun ItemCard(
                                 .padding(horizontal = 20.dp),
                             contentAlignment = Alignment.CenterEnd
                         ) {
-                            Icon(Icons.Default.Delete, contentDescription = "delete", tint = Color.White.copy(alpha = if (progress > dismissThreshold) 1f else 0f))
+                            Icon(
+                                Icons.Default.Delete,
+                                contentDescription = "delete",
+                                tint = Color.White.copy(alpha = if (progress > dismissThreshold) 1f else 0f)
+                            )
                         }
                     }
+
                     else -> {}
                 }
             },
             dismissContent = {
-                Row(
+                Column(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .wrapContentHeight()
                         .background(
                             MaterialTheme.colorScheme.surfaceVariant,
-                            shape = RoundedCornerShape(6.dp)
+                            shape = RoundedCornerShape(12.dp)
                         )
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(
-                        text = item.title,
-                        modifier = Modifier.weight(1f)
-                    )
-                    item.dueDate?.let { ts ->
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
                         Text(
-                            text = dateFormat.format(ts.toDate()),
+                            text = item.title,
+                            modifier = Modifier.weight(1f)
                         )
+                        item.dueDate?.let { ts ->
+                            Text(
+                                text = dateFormat.format(ts.toDate()),
+                            )
+                        }
                     }
+
+                    content()
                 }
             }
         )

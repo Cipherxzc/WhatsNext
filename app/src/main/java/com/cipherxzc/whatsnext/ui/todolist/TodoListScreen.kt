@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
-import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.outlined.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -41,6 +41,8 @@ import com.cipherxzc.whatsnext.ui.core.viewmodel.SyncViewModel
 import com.cipherxzc.whatsnext.ui.todolist.viewmodel.AddTodoViewModel
 import com.cipherxzc.whatsnext.ui.todolist.viewmodel.AddTodoViewModelFactory
 import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoListViewModel
+import com.cipherxzc.whatsnext.ui.todolist.viewmodel.WhatsNextViewModel
+import com.cipherxzc.whatsnext.ui.todolist.viewmodel.WhatsNextViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -54,6 +56,9 @@ fun TodoListScreen(
 ) {
     val addTodoViewModel: AddTodoViewModel = viewModel(
         factory = AddTodoViewModelFactory(todoListViewModel::insertItem)
+    )
+    val whatsNextViewModel: WhatsNextViewModel = viewModel(
+        factory = WhatsNextViewModelFactory(azureViewModel)
     )
 
     val isSyncing by syncViewModel.isSyncing.collectAsState()
@@ -86,11 +91,10 @@ fun TodoListScreen(
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
-            // TODO: 后续改为 What's Next? 并将新增移动到最上方
             ExtendedFloatingActionButton(
-                text = { Text("有什么要做的？") },
-                icon = { Icon(Icons.Filled.Add, null) },
-                onClick = { addTodoViewModel.showDialog() },
+                text = { Text("What's Next？") },
+                icon = { Icon(Icons.Filled.CheckCircle, null) },
+                onClick = { whatsNextViewModel.showDialog() },
                 expanded = true,
                 containerColor = MaterialTheme.colorScheme.primary,
             )
@@ -153,6 +157,12 @@ fun TodoListScreen(
             )
 
             AddTodoDialog(addTodoViewModel)
+
+            WhatsNextDialog(
+                todoListViewModel = todoListViewModel,
+                whatsNextViewModel = whatsNextViewModel,
+                onItemClicked = onItemClicked
+            )
         }
     }
 }

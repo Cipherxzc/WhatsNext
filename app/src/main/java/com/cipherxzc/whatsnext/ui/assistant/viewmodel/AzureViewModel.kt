@@ -64,7 +64,7 @@ class AzureViewModel(
         }
 
         // get response
-        val response = azureRepository.sendToLLM(asJson = true)
+        val response = azureRepository.sendToLLM()
 
         if (response == "timeout"){
             return null
