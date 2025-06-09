@@ -1,4 +1,4 @@
-package com.cipherxzc.whatsnext.ui.todolist
+package com.cipherxzc.whatsnext.ui.todolist.utils
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background

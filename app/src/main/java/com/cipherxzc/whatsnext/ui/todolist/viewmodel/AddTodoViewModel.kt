@@ -48,6 +48,7 @@ class AddTodoViewModel(
     fun setTitle(title: TextFieldValue) { _titleFlow.value = title }
     fun setDetail(detail: TextFieldValue) { _detailFlow.value = detail }
     fun setDueDate(dueDate: Date?) { _dueDateFlow.value = dueDate  }
+    fun setImportance(importance: Int?) { _importanceFlow.value = importance }
 }
 
 class AddTodoViewModelFactory(

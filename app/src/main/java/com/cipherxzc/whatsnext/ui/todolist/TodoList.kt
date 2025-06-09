@@ -29,6 +29,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.cipherxzc.whatsnext.data.database.TodoItem
 import com.cipherxzc.whatsnext.ui.core.common.LoadingScreen
+import com.cipherxzc.whatsnext.ui.todolist.utils.CardType
+import com.cipherxzc.whatsnext.ui.todolist.utils.ItemCard
 import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoListViewModel
 
 @Composable
