@@ -85,6 +85,11 @@ class AzureRepository() {
         promptBuilder.appendLine(jsonArray)
     }
 
+    fun appendCurrentTime() {
+        val timeNow = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA).format(System.currentTimeMillis())
+        append("Current local time: $timeNow.")
+    }
+
     private val history: ArrayDeque<Pair<String, String>> = ArrayDeque()
     private var maxHistory = 10
 

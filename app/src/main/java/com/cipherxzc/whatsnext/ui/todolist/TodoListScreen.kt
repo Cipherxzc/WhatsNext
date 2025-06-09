@@ -15,7 +15,6 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Refresh
-import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExtendedFloatingActionButton
@@ -33,7 +32,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -43,7 +41,6 @@ import com.cipherxzc.whatsnext.ui.core.viewmodel.SyncViewModel
 import com.cipherxzc.whatsnext.ui.todolist.viewmodel.AddTodoViewModel
 import com.cipherxzc.whatsnext.ui.todolist.viewmodel.AddTodoViewModelFactory
 import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoListViewModel
-import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -139,20 +136,6 @@ fun TodoListScreen(
                             Spacer(Modifier.width(6.dp))
                             Text("同步")
                         }
-                    }
-                    Spacer(Modifier.width(16.dp))
-                    // What's Next? 按钮
-                    val coroutineScope = rememberCoroutineScope()
-                    Button(
-                        onClick = {
-                            coroutineScope.launch {
-                                azureViewModel.whatsNext()
-                            }
-                        },
-                        modifier = Modifier
-                            .padding(16.dp)
-                    ) {
-                        Text("What's Next?")
                     }
                 }
             }

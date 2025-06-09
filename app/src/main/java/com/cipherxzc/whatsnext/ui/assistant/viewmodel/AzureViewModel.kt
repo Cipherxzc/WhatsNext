@@ -7,9 +7,6 @@ import com.cipherxzc.whatsnext.data.repository.AzureRepository
 import com.cipherxzc.whatsnext.ui.core.viewmodel.TodoDataViewModel
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
 class AzureViewModel(
     private val todoDataViewModel: TodoDataViewModel
@@ -17,23 +14,24 @@ class AzureViewModel(
 
     private val azureRepository = AzureRepository()
 
-    suspend fun whatsNext(): List<Pair<TodoItem, String>>? {
-        val allItems = todoDataViewModel.getAllItems()
-        val todoItems = allItems.filter { !it.isCompleted }
+    fun initWhatsNext() {
+        azureRepository.clearHistory()
 
-        azureRepository.clearPrompt()
-
-        azureRepository.append("Todo list:\n")
-        azureRepository.append(todoItems)
-
-        val timeNow = SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA).format(Date())
-
+        // system prompt
         val systemPrompt = """
         You are a personal task-prioritization assistant.
-        Current local time: $timeNow.
     
-        Input: a JSON array of todo items.
-        Each item has: id, title, detail, dueDate (yyyy-MM-dd HH:mm or null), importance (0-10 or null).
+        You will receive three inputs:
+        1. Current local time ("yyyy-MM-dd HH:mm").
+        2. A JSON array of todo items.
+        3. User instructions in natural language (Optional).
+        
+        Each todo item contains:
+        - id (string)
+        - title (string)
+        - detail (string)
+        - dueDate (string, "yyyy-MM-dd HH:mm" or null)
+        - importance (integer, 0–10 or null)
     
         Evaluate the tasks holistically — urgency, long-term value, estimated effort,
         personal motivation, and any hints from title/detail. 
@@ -44,8 +42,28 @@ class AzureViewModel(
     
         List up to THREE items in the order you recommend tackling them.
         """.trimIndent()
-        azureRepository.setSystemPrompt(systemPrompt)
 
+        azureRepository.setSystemPrompt(systemPrompt)
+    }
+
+    suspend fun whatsNext(
+        userPrompt: String? = null
+    ): List<Pair<TodoItem, String>>? {
+        azureRepository.clearPrompt()
+
+        azureRepository.appendCurrentTime()
+
+        val allItems = todoDataViewModel.getAllItems()
+        val todoItems = allItems.filter { !it.isCompleted }
+
+        azureRepository.append("Todo list:\n")
+        azureRepository.append(todoItems)
+
+        userPrompt?.let {
+            azureRepository.append(it)
+        }
+
+        // get response
         val response = azureRepository.sendToLLM(asJson = true)
 
         if (response == "timeout"){
