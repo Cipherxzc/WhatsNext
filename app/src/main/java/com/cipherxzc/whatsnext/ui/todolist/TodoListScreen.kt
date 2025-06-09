@@ -148,7 +148,8 @@ fun TodoListScreen(
         ) {
             TodoList(
                 todoListViewModel = todoListViewModel,
-                onItemClicked = onItemClicked
+                onItemClicked = onItemClicked,
+                onAddTodoClicked = addTodoViewModel::showDialog,
             )
 
             AddTodoDialog(addTodoViewModel)
