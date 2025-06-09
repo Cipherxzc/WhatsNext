@@ -17,12 +17,12 @@ interface TodoItemDao {
     @Query("DELETE FROM todo_items WHERE id = :id")
     suspend fun deleteById(id: String)
 
-    @Query("SELECT * FROM todo_items WHERE userId = :userId AND isDeleted = 0 ORDER BY dueDate")
+    @Query("SELECT * FROM todo_items WHERE userId = :userId AND isDeleted = 0 ORDER BY dueDate ASC, id ASC")
     suspend fun getItemsByUser(userId: String): List<TodoItem>
 
     @Query("SELECT * FROM todo_items WHERE id = :id LIMIT 1")
     suspend fun getItemById(id: String): TodoItem?
 
     @Query("SELECT * FROM todo_items WHERE userId = :userId AND isSynced = 0")
-    suspend fun getUnsyncedItems(userId: String): List<TodoItem>
+    suspend fun getUnSyncedItems(userId: String): List<TodoItem>
 }

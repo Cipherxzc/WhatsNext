@@ -21,7 +21,7 @@ class TodoRepository(
 
     suspend fun getItemById(id: String): TodoItem? = todoItemDao.getItemById(id)
     suspend fun getItemsByUser(userId: String): List<TodoItem> = todoItemDao.getItemsByUser(userId)
-    suspend fun getUnsyncedItems(userId: String): List<TodoItem> = todoItemDao.getUnsyncedItems(userId)
+    suspend fun getUnSyncedItems(userId: String): List<TodoItem> = todoItemDao.getUnSyncedItems(userId)
 
     private suspend fun insertOrUpdateItem(item: TodoItem) = todoItemDao.insertOrUpdate(item)
 
@@ -29,14 +29,16 @@ class TodoRepository(
         userId: String,
         title: String,
         detail: String = "",
-        dueDate: Timestamp? = null
+        dueDate: Timestamp? = null,
+        importance: Int? = null
     ): TodoItem {
         val item = TodoItem(
             id = generateDocumentId(),
             userId = userId,
             title = title,
             detail = detail,
-            dueDate = dueDate
+            dueDate = dueDate,
+            importance = importance
         )
         insertOrUpdateItem(item)
         return item
@@ -47,6 +49,7 @@ class TodoRepository(
         title: String? = null,
         detail: String? = null,
         dueDate: Timestamp? = null,
+        importance: Int? = null,
         isCompleted: Boolean? = null,
         isDeleted: Boolean? = null
     ) {
@@ -56,6 +59,7 @@ class TodoRepository(
                 title = title ?: it.title,
                 detail = detail ?: it.detail,
                 dueDate = dueDate ?: it.dueDate,
+                importance = importance ?: it.importance,
                 isCompleted = isCompleted ?: it.isCompleted,
                 isDeleted = isDeleted ?: it.isDeleted,
                 // 同步信息
@@ -71,8 +75,9 @@ class TodoRepository(
         title: String? = null,
         detail: String? = null,
         dueDate: Timestamp? = null,
-        isCompleted: Boolean? = null
-    ) = modifyItem(id, title, detail, dueDate, isCompleted)
+        isCompleted: Boolean? = null,
+        importance: Int? = null
+    ) = modifyItem(id, title, detail, dueDate, importance, isCompleted)
 
     suspend fun completeItem(id: String) = modifyItem(id, isCompleted = true)
     suspend fun unCompleteItem(id: String) = modifyItem(id, isCompleted = false)
@@ -105,7 +110,7 @@ class TodoRepository(
         insertItem(
             userId = userId,
             title = "添加您的第一个 Todo",
-            detail = "点击右下角的加号按钮，开始添加您的第一个待办事项！"
+            detail = "点击顶部的加号按钮，开始添加您的第一个待办事项！"
         )
     }
 }

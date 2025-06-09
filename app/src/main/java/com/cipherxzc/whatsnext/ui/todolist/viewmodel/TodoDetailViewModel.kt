@@ -25,11 +25,13 @@ class TodoDetailViewModel(
     private val _titleFlow = MutableStateFlow(TextFieldValue(""))
     private val _detailFlow = MutableStateFlow(TextFieldValue(""))
     private val _dueDateFlow = MutableStateFlow<Date?>(null)
+    private val _importanceFlow = MutableStateFlow<Int?>(null)
     private val _isCompletedFlow = MutableStateFlow<Boolean>(false)
 
     val titleFlow: StateFlow<TextFieldValue> = _titleFlow
     val detailFlow: StateFlow<TextFieldValue> = _detailFlow
     val dueDateFlow: StateFlow<Date?> = _dueDateFlow
+    val importanceFlow: StateFlow<Int?> = _importanceFlow
     val isCompletedFlow: StateFlow<Boolean> = _isCompletedFlow
 
     init {
@@ -50,6 +52,7 @@ class TodoDetailViewModel(
             _detailFlow.value = TextFieldValue(todoItem.detail)
             _dueDateFlow.value = todoItem.dueDate?.toDate()
             _isCompletedFlow.value = todoItem.isCompleted
+            _importanceFlow.value = todoItem.importance
 
             _isLoadingFlow.value = false
         }
@@ -62,6 +65,7 @@ class TodoDetailViewModel(
                 title = titleFlow.value.text,
                 detail = detailFlow.value.text,
                 dueDate = dueDateFlow.value?.let { Timestamp(it) },
+                importance = importanceFlow.value,
                 isCompleted = isCompletedFlow.value
             )
             isModified = false
@@ -91,6 +95,11 @@ class TodoDetailViewModel(
 
     fun setDueDate(newDueDate: Date) {
         _dueDateFlow.value = newDueDate
+        isModified = true
+    }
+
+    fun setImportance(newImportance: Int?) {
+        _importanceFlow.value = newImportance
         isModified = true
     }
 }

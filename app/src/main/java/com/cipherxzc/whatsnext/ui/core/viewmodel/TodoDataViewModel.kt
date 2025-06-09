@@ -11,6 +11,7 @@ import com.google.firebase.Timestamp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import java.util.Date
 
 class TodoDataViewModel(application: Application) : AndroidViewModel(application) {
 
@@ -43,13 +44,14 @@ class TodoDataViewModel(application: Application) : AndroidViewModel(application
     suspend fun insertItem(
         title: String,
         detail: String = "",
-        dueDate: Timestamp? = null,
+        dueDate: Date? = null,
+        importance: Int? = null,
         userId: String? = currentUserId
     ): TodoItem {
         if (userId == null) {
             throw IllegalStateException("Current user ID is not set")
         }
-        return todoRepo.insertItem(userId, title, detail, dueDate)
+        return todoRepo.insertItem(userId, title, detail, dueDate?.let { Timestamp(it) }, importance)
     }
 
     fun insertDefaultData(onComplete: (() -> Unit)? = null, userId: String? = currentUserId) {
@@ -72,6 +74,7 @@ class TodoDataViewModel(application: Application) : AndroidViewModel(application
         title: String? = null,
         detail: String? = null,
         dueDate: Timestamp? = null,
+        importance: Int? = null,
         isCompleted: Boolean? = null,
     ) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -80,6 +83,7 @@ class TodoDataViewModel(application: Application) : AndroidViewModel(application
                 title = title,
                 detail = detail,
                 dueDate = dueDate,
+                importance = importance,
                 isCompleted = isCompleted,
             )
         }
@@ -107,10 +111,10 @@ class TodoDataViewModel(application: Application) : AndroidViewModel(application
         }
     }
 
-    suspend fun getUnsyncedItems(userId: String? = currentUserId): List<TodoItem> {
+    suspend fun getUnSyncedItems(userId: String? = currentUserId): List<TodoItem> {
         if (userId == null) {
             throw IllegalStateException("Current user ID is not set")
         }
-        return todoRepo.getUnsyncedItems(userId)
+        return todoRepo.getUnSyncedItems(userId)
     }
 }

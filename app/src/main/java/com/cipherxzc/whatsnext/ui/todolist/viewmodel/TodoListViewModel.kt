@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.cipherxzc.whatsnext.data.database.TodoItem
 import com.cipherxzc.whatsnext.ui.core.viewmodel.TodoDataViewModel
-import com.google.firebase.Timestamp
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -57,9 +56,9 @@ class TodoListViewModel(
         }
     }
 
-    fun insertItem(title: String, detail: String = "", dueDate: Date? = null) {
+    fun insertItem(title: String, detail: String = "", dueDate: Date? = null, importance: Int? = null) {
         viewModelScope.launch(Dispatchers.IO) {
-            val newItem = todoDataViewModel.insertItem(title, detail, dueDate?.let { Timestamp(it) })
+            val newItem = todoDataViewModel.insertItem(title, detail, dueDate, importance)
             loadItems()
         }
     }

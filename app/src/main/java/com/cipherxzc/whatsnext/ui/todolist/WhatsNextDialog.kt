@@ -39,7 +39,6 @@ fun WhatsNextDialog(
 
     val userPrompt = remember { mutableStateOf("") }
 
-    // 当 showAddDialog 为 true 时显示 AlertDialog 对话框
     if (showDialog) {
         AlertDialog(
             onDismissRequest = whatsNextViewModel::hideDialog,
@@ -73,7 +72,10 @@ fun WhatsNextDialog(
                         )
                         TextButton(
                             modifier = Modifier.wrapContentWidth(),
-                            onClick = { whatsNextViewModel.whatsNext(userPrompt.value) },
+                            onClick = {
+                                whatsNextViewModel.whatsNext(userPrompt.value)
+                                userPrompt.value = ""
+                            },
                         ) {
                             Text("发送")
                         }

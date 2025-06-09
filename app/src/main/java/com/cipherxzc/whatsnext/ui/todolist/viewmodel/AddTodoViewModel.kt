@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import java.util.Date
 
 class AddTodoViewModel(
-    private val insertItem: (String, String, Date?) -> Unit
+    private val insertItem: (String, String, Date?, Int?) -> Unit
 ) : ViewModel() {
 
     private val _showDialogFlow = MutableStateFlow(false)
@@ -17,21 +17,25 @@ class AddTodoViewModel(
     private val _titleFlow = MutableStateFlow(TextFieldValue(""))
     private val _detailFlow = MutableStateFlow(TextFieldValue(""))
     private val _dueDateFlow = MutableStateFlow<Date?>(null)
+    private val _importanceFlow = MutableStateFlow<Int?>(null)
 
     val titleFlow: StateFlow<TextFieldValue> = _titleFlow
     val detailFlow: StateFlow<TextFieldValue> = _detailFlow
     val dueDateFlow: StateFlow<Date?> = _dueDateFlow
+    val importanceFlow: StateFlow<Int?> = _importanceFlow
 
     fun addTodo(): String {
         if (titleFlow.value.text.isNotBlank()) {
             insertItem(
                 titleFlow.value.text,
                 detailFlow.value.text,
-                dueDateFlow.value
+                dueDateFlow.value,
+                importanceFlow.value
             )
             _titleFlow.value = TextFieldValue("")
             _detailFlow.value = TextFieldValue("")
             _dueDateFlow.value = null
+            _importanceFlow.value = null
             hideDialog()
             return "添加成功"
         } else {
@@ -47,7 +51,7 @@ class AddTodoViewModel(
 }
 
 class AddTodoViewModelFactory(
-    private val insertItem: (String, String, Date?) -> Unit
+    private val insertItem: (String, String, Date?, Int?) -> Unit
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
