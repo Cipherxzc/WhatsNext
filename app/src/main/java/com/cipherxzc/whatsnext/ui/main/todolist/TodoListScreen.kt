@@ -151,7 +151,7 @@ private fun TopButtons(
                     }
                 )
             },
-            modifier = Modifier.weight(0.5f),
+            modifier = Modifier.weight(0.6f),
             enabled = !isSyncing
         ) {
             if (isSyncing) {

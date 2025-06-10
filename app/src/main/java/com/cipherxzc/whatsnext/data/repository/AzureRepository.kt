@@ -29,6 +29,27 @@ private data class AzureTodoItemDto(
     val importance: Int? = null
 )
 
+class ChatHistory(
+    val maxHistory: Int = 10
+) {
+    private val history: ArrayDeque<Pair<String, String>> = ArrayDeque()
+
+    fun clear() = history.clear()
+
+    private fun trim() {
+        while (history.size > maxHistory) {
+            history.removeFirst()
+        }
+    }
+
+    fun add(user: String, assistant: String) {
+        history.addLast(user to assistant)
+        trim()
+    }
+
+    fun getAll(): List<Pair<String, String>> = history.toList()
+}
+
 class AzureRepository() {
     private val azureKey = BuildConfig.AZURE_OPENAI_API_KEY
     private val azureResourceName = BuildConfig.AZURE_OPENAI_RESOURCE_NAME
@@ -90,35 +111,22 @@ class AzureRepository() {
         append("Current local time: $timeNow.")
     }
 
-    private val history: ArrayDeque<Pair<String, String>> = ArrayDeque()
-    private var maxHistory = 10
-
-    fun clearHistory() = history.clear()
-
-    private fun trimHistory() {
-        while (history.size > maxHistory) {
-            history.removeFirst()
-        }
-    }
-
-    private fun addHistory(user: String, assistant: String) {
-        history.addLast(user to assistant)
-        trimHistory()
-    }
+    fun getUserPrompt(): String = promptBuilder.toString().trim()
 
     suspend fun sendToLLM(
         maxTokens: Int = 512,
         temperature: Double = 0.7,
         timeoutMillis: Long = 10000L,
-        asJson: Boolean = false
+        asJson: Boolean = false,
+        chatHistory: ChatHistory? = null
     ): String = withContext(Dispatchers.IO) {
-        val userPrompt = promptBuilder.toString().trim()
+        val userPrompt = getUserPrompt()
 
         val messages = buildList {
             add(ChatMessage(ChatRole.System, systemPrompt))
 
             // history
-            history.forEach { (user, assistant) ->
+            chatHistory?.getAll()?.forEach { (user, assistant) ->
                 add(ChatMessage(ChatRole.User, user))
                 add(ChatMessage(ChatRole.Assistant, assistant))
             }
@@ -140,9 +148,6 @@ class AzureRepository() {
             }
 
             val reply = response.choices.first().message.content.orEmpty()
-
-            // 请求成功后写入历史
-            addHistory(userPrompt, reply)
 
             reply
         } catch (e: TimeoutCancellationException) {

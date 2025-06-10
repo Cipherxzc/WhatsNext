@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import androidx.room.Room
 import com.cipherxzc.whatsnext.data.database.AppDatabase
 import com.cipherxzc.whatsnext.data.database.TodoItem
+import com.cipherxzc.whatsnext.data.database.TodoItemInfo
 import com.cipherxzc.whatsnext.data.repository.TodoRepository
 import com.google.firebase.Timestamp
 import kotlinx.coroutines.Dispatchers
@@ -52,6 +53,13 @@ class TodoDataViewModel(application: Application) : AndroidViewModel(application
             throw IllegalStateException("Current user ID is not set")
         }
         return todoRepo.insertItem(userId, title, detail, dueDate?.let { Timestamp(it) }, importance)
+    }
+
+    suspend fun insertItem(item: TodoItemInfo, userId: String? = currentUserId): TodoItem {
+        if (userId == null) {
+            throw IllegalStateException("Current user ID is not set")
+        }
+        return todoRepo.insertItem(userId, item.title, item.detail, item.dueDate?.let { Timestamp(it) }, item.importance)
     }
 
     fun insertDefaultData(onComplete: (() -> Unit)? = null, userId: String? = currentUserId) {

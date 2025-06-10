@@ -26,6 +26,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.cipherxzc.whatsnext.ui.core.viewmodel.TodoDataViewModel
+import com.cipherxzc.whatsnext.ui.main.assistant.AssistantScreen
 import com.cipherxzc.whatsnext.ui.main.assistant.viewmodel.AzureViewModel
 import com.cipherxzc.whatsnext.ui.main.todolist.TodoListNavGraph
 
@@ -111,7 +112,7 @@ fun MainScreen(
                 Text("视图（TODO）")
             }
             composable(BottomNavItem.Assistant.route) {
-                Text("AI助手（TODO）")
+                AssistantScreen()
             }
         }
     }
