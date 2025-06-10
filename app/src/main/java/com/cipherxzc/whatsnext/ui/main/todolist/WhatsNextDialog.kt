@@ -25,25 +25,29 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.cipherxzc.whatsnext.data.database.TodoItemInfo
 import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModel
 import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.WhatsNextViewModel
 import com.cipherxzc.whatsnext.ui.main.utils.CardType
 import com.cipherxzc.whatsnext.ui.main.utils.ItemCard
+import com.cipherxzc.whatsnext.ui.main.utils.TodoItemPreview
 
 @Composable
 fun WhatsNextDialog(
     todoListViewModel: TodoListViewModel,
     whatsNextViewModel: WhatsNextViewModel,
-    onItemClicked: (String) -> Unit
+    navigateDetail: (String) -> Unit
 ){
     val showDialog by whatsNextViewModel.showDialogFlow.collectAsState()
     val recommendedItems by whatsNextViewModel.recommendedItemsFlow.collectAsState()
 
     val userPrompt = remember { mutableStateOf("") }
+    val previewItem = remember { mutableStateOf<TodoItemInfo?>(null) }
 
     if (showDialog) {
         AlertDialog(
-            onDismissRequest = whatsNextViewModel::hideDialog,
+            // onDismissRequest = whatsNextViewModel::hideDialog,
+            onDismissRequest = {}, // 禁止点击外部关闭对话框
             shape = MaterialTheme.shapes.large,
             containerColor = MaterialTheme.colorScheme.surface,
             title = { Text("What's Next?") },
@@ -87,7 +91,8 @@ fun WhatsNextDialog(
                         ItemCard(
                             item = item.toInfo(),
                             type = CardType.Complete,
-                            onItemClicked = { onItemClicked(item.id) },
+                            onItemClicked = { previewItem.value = item.toInfo() },
+                            onLongPress = { navigateDetail(item.id) },
                             onDismiss = { todoListViewModel.complete(item.id) },
                             onDelete = { todoListViewModel.deleteItem(item.id) },
                         ) {
@@ -102,7 +107,7 @@ fun WhatsNextDialog(
                             ) {
                                 Text(
                                     modifier = Modifier.padding(horizontal = 8.dp),
-                                    text = "Reason:",
+                                    text = "推荐理由:",
                                     style = MaterialTheme.typography.labelLarge
                                 )
                                 Text(
@@ -115,6 +120,13 @@ fun WhatsNextDialog(
                             }
                         }
                     }
+                }
+
+                previewItem.value?.let { item ->
+                    TodoItemPreview(
+                        item = item,
+                        onDismiss = { previewItem.value = null }
+                    )
                 }
             },
             confirmButton = {

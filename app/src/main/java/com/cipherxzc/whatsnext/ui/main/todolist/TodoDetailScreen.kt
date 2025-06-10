@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -73,9 +72,7 @@ private fun ItemDetailContent(todoDetailViewModel: TodoDetailViewModel) {
             )
         },
         bottomBar = {
-            BottomAppBar {
-                // TODO: 专注时间
-            }
+            // TODO: 专注时间
         }
     ) { innerPadding ->
         Box(
@@ -122,6 +119,7 @@ private fun ItemDetailContent(todoDetailViewModel: TodoDetailViewModel) {
                     onValueChange = { newTitle ->
                         todoDetailViewModel.setTitle(newTitle)
                     },
+                    label = { Text("标题") },
                     placeholder = { Text("打算做点什么？") },
                     singleLine = true,
                     modifier = Modifier
@@ -140,8 +138,11 @@ private fun ItemDetailContent(todoDetailViewModel: TodoDetailViewModel) {
                     onValueChange = { newDetail ->
                         todoDetailViewModel.setDetail(newDetail)
                     },
+                    label = { Text("详细描述") },
                     placeholder = { Text("详细描述") },
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize().weight(1f),
+                    singleLine = false,
+                    maxLines = Int.MAX_VALUE
                 )
             }
         }

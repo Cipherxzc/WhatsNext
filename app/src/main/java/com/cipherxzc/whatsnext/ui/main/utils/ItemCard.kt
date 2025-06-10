@@ -1,8 +1,9 @@
 package com.cipherxzc.whatsnext.ui.main.utils
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -43,15 +44,16 @@ enum class CardType {
 
 // TODO: 使用 AnchoredDraggable 替代 SwipeToDismiss 实现更复杂的滑动交互
 // TODO: 使用 material3 替代
-@OptIn(ExperimentalMaterialApi::class)
+@OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun ItemCard(
     modifier: Modifier = Modifier,
     item: TodoItemInfo,
     type: CardType,
-    onItemClicked: () -> Unit,
-    onDismiss: () -> Unit,
-    onDelete: () -> Unit,
+    onItemClicked: () -> Unit = {},
+    onLongPress: () -> Unit = {},
+    onDismiss: () -> Unit = {},
+    onDelete: () -> Unit = {},
     content: @Composable () -> Unit = {}
 ) {
     // 根据类型选择背景色和图标
@@ -84,7 +86,10 @@ fun ItemCard(
     Card(
         modifier = modifier
             .padding(horizontal = 0.dp, vertical = 8.dp)
-            .clickable(onClick = onItemClicked)
+            .combinedClickable(
+                onClick = onItemClicked,
+                onLongClick = onLongPress
+            )
     ) {
         SwipeToDismiss(
             modifier = Modifier.fillMaxWidth(),

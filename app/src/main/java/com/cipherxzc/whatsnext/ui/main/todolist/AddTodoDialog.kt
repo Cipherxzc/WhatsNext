@@ -55,7 +55,7 @@ fun AddTodoDialog(
                         ),
                         value = newTitle,
                         onValueChange = { addTodoViewModel.setTitle(it) },
-                        label = { Text("Title") },
+                        label = { Text("标题") },
                         placeholder = { Text("准备做点什么？") }
                     )
                     Spacer(modifier = Modifier.height(8.dp))
@@ -69,7 +69,7 @@ fun AddTodoDialog(
                         ),
                         value = newDetail,
                         onValueChange = { addTodoViewModel.setDetail(it) },
-                        label = { Text("Detail") },
+                        label = { Text("详细描述") },
                         placeholder = { Text("详细描述") }
                     )
                     Spacer(modifier = Modifier.height(8.dp))

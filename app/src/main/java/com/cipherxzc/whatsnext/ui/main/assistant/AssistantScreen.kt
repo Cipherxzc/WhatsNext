@@ -55,7 +55,6 @@ fun AssistantScreen(
     val input by assistantViewModel.inputFlow.collectAsStateWithLifecycle(TextFieldValue(""))
 
     val previewItem = remember { mutableStateOf<TodoItemInfo?>(null) }
-    val showPreview = remember { mutableStateOf(false) }
 
     val listState: LazyListState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
@@ -104,7 +103,6 @@ fun AssistantScreen(
                             assistantViewModel = assistantViewModel,
                             onPreview = { item ->
                                 previewItem.value = item
-                                showPreview.value = true
                             }
                         )
                 }
@@ -115,7 +113,6 @@ fun AssistantScreen(
     previewItem.value?.let { item ->
         TodoItemPreview(
             item = item,
-            showDialog = showPreview.value,
             onDismiss = { previewItem.value = null }
         )
     }

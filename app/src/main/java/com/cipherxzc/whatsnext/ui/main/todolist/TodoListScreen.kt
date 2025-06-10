@@ -47,7 +47,7 @@ fun TodoListScreen(
     todoListViewModel: TodoListViewModel,
     azureViewModel: AzureViewModel,
     syncViewModel: SyncViewModel,
-    onItemClicked: (String) -> Unit
+    navigateDetail: (String) -> Unit
 ) {
     val addTodoViewModel: AddTodoViewModel = viewModel(
         factory = AddTodoViewModelFactory(todoListViewModel::insertItem)
@@ -93,7 +93,7 @@ fun TodoListScreen(
 
                 TodoList(
                     todoListViewModel = todoListViewModel,
-                    onItemClicked = onItemClicked
+                    navigateDetail = navigateDetail
                 )
             }
 
@@ -102,7 +102,7 @@ fun TodoListScreen(
             WhatsNextDialog(
                 todoListViewModel = todoListViewModel,
                 whatsNextViewModel = whatsNextViewModel,
-                onItemClicked = onItemClicked
+                navigateDetail = navigateDetail
             )
         }
     }

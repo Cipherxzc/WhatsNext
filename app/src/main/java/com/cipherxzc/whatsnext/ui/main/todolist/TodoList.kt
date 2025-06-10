@@ -17,20 +17,24 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cipherxzc.whatsnext.data.database.TodoItem
+import com.cipherxzc.whatsnext.data.database.TodoItemInfo
 import com.cipherxzc.whatsnext.ui.core.common.LoadingScreen
 import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModel
 import com.cipherxzc.whatsnext.ui.main.utils.CardType
 import com.cipherxzc.whatsnext.ui.main.utils.ItemCard
+import com.cipherxzc.whatsnext.ui.main.utils.TodoItemPreview
 
 @Composable
 fun TodoList(
     todoListViewModel: TodoListViewModel,
-    onItemClicked: (String) -> Unit
+    navigateDetail: (String) -> Unit
 ) {
     val isLoading by todoListViewModel.isLoadingFlow.collectAsStateWithLifecycle()
 
@@ -41,6 +45,8 @@ fun TodoList(
     val overdueExpend by todoListViewModel.overdueExpendFlow.collectAsStateWithLifecycle()
     val todoExpend by todoListViewModel.todoExpendFlow.collectAsStateWithLifecycle()
     val completedExpend by todoListViewModel.completedExpendFlow.collectAsStateWithLifecycle()
+
+    val previewItem = remember { mutableStateOf<TodoItemInfo?>(null) }
 
     if (isLoading) {
         LoadingScreen("TodoList")
@@ -62,9 +68,10 @@ fun TodoList(
                 expanded = overdueExpend,
                 type = CardType.Complete,
                 onToggleExpand = { todoListViewModel.expand("overdue") },
-                onItemClicked = onItemClicked,
-                onDismiss = { todoListViewModel.complete(it) },
-                onDelete = { todoListViewModel.deleteItem(it) }
+                onItemClicked = { previewItem.value = it.toInfo() },
+                onLongPress = { navigateDetail(it.id) },
+                onDismiss = { todoListViewModel.reset(it.id) },
+                onDelete = { todoListViewModel.deleteItem(it.id) }
             )
 
             collapsibleItemList(
@@ -73,9 +80,10 @@ fun TodoList(
                 expanded = todoExpend,
                 type = CardType.Complete,
                 onToggleExpand = { todoListViewModel.expand("todo") },
-                onItemClicked = onItemClicked,
-                onDismiss = { todoListViewModel.complete(it) },
-                onDelete = { todoListViewModel.deleteItem(it) }
+                onItemClicked = { previewItem.value = it.toInfo() },
+                onLongPress = { navigateDetail(it.id) },
+                onDismiss = { todoListViewModel.reset(it.id) },
+                onDelete = { todoListViewModel.deleteItem(it.id) }
             )
 
             collapsibleItemList(
@@ -84,11 +92,19 @@ fun TodoList(
                 expanded = completedExpend,
                 type = CardType.Reset,
                 onToggleExpand = { todoListViewModel.expand("completed") },
-                onItemClicked = onItemClicked,
-                onDismiss = { todoListViewModel.reset(it) },
-                onDelete = { todoListViewModel.deleteItem(it) }
+                onItemClicked = { previewItem.value = it.toInfo() },
+                onLongPress = { navigateDetail(it.id) },
+                onDismiss = { todoListViewModel.reset(it.id) },
+                onDelete = { todoListViewModel.deleteItem(it.id) }
             )
         }
+    }
+
+    previewItem.value?.let { item ->
+        TodoItemPreview(
+            item = item,
+            onDismiss = { previewItem.value = null }
+        )
     }
 }
 
@@ -98,9 +114,10 @@ internal fun LazyListScope.collapsibleItemList(
     expanded: Boolean,
     type: CardType,
     onToggleExpand: () -> Unit,
-    onItemClicked: (String) -> Unit,
-    onDismiss: (String) -> Unit,
-    onDelete: (String) -> Unit
+    onItemClicked: (TodoItem) -> Unit,
+    onLongPress: (TodoItem) -> Unit,
+    onDismiss: (TodoItem) -> Unit,
+    onDelete: (TodoItem) -> Unit
 ) {
     item(key = "header-$title") {
         Row(
@@ -127,9 +144,10 @@ internal fun LazyListScope.collapsibleItemList(
             ItemCard(
                 modifier = Modifier.animateItem(),
                 item = item.toInfo(),
-                onItemClicked = { onItemClicked(item.id) },
-                onDismiss = { onDismiss(item.id) },
-                onDelete = { onDelete(item.id) },
+                onItemClicked = { onItemClicked(item) },
+                onLongPress = { onLongPress(item) },
+                onDismiss = { onDismiss(item) },
+                onDelete = { onDelete(item) },
                 type = type
             )
         }

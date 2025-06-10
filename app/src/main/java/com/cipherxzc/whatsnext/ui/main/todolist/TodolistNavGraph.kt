@@ -35,7 +35,7 @@ fun TodoListNavGraph(
                 todoListViewModel = todoListViewModel,
                 azureViewModel = azureViewModel,
                 syncViewModel = syncViewModel,
-                onItemClicked = { itemId ->
+                navigateDetail = { itemId ->
                     navController.navigate("itemDetail/$itemId")
                 }
             )
