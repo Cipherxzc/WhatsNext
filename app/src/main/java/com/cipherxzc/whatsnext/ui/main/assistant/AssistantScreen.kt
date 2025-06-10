@@ -17,6 +17,8 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.Send
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -52,6 +54,21 @@ fun AssistantScreen(
     val focusManager = LocalFocusManager.current
 
     Scaffold(
+        topBar = {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
+                horizontalArrangement = Arrangement.End
+            ) {
+                Button(
+                    onClick = { assistantViewModel.clearHistory() },
+                    colors = ButtonDefaults.buttonColors(containerColor = MaterialTheme.colorScheme.primary)
+                ) {
+                    Text("Clear History")
+                }
+            }
+        },
         bottomBar = {
             AssistantInputBar(
                 value = input,
@@ -174,4 +191,3 @@ private fun ItemsInfoList(entry: ChatEntry.ItemsInfo, viewModel: AssistantViewMo
         }
     }
 }
-

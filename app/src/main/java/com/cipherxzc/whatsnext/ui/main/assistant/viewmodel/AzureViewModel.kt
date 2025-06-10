@@ -25,6 +25,10 @@ class AzureViewModel(
     private val whatsNextHistory = ChatHistory()
     private val chatHistory = ChatHistory()
 
+    fun clearChatHistory() {
+        chatHistory.clear()
+    }
+
     fun initWhatsNext() {
         val systemPrompt = """
         You are a personal task-prioritization assistant.

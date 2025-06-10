@@ -35,6 +35,7 @@ class AssistantViewModel(
 
     fun clearHistory() {
         _history.value = emptyList()
+        azureViewModel.clearChatHistory()
     }
 
     fun initAssistant() {
