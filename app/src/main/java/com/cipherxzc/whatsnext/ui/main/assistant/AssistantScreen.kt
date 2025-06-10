@@ -29,6 +29,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,10 +39,12 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.cipherxzc.whatsnext.data.database.TodoItemInfo
 import com.cipherxzc.whatsnext.ui.main.assistant.viewmodel.AssistantViewModel
 import com.cipherxzc.whatsnext.ui.main.assistant.viewmodel.ChatEntry
 import com.cipherxzc.whatsnext.ui.main.utils.CardType
 import com.cipherxzc.whatsnext.ui.main.utils.ItemCard
+import com.cipherxzc.whatsnext.ui.main.utils.TodoItemPreview
 import kotlinx.coroutines.launch
 
 @Composable
@@ -49,6 +53,9 @@ fun AssistantScreen(
 ) {
     val history by assistantViewModel.history.collectAsStateWithLifecycle(emptyList())
     val input by assistantViewModel.inputFlow.collectAsStateWithLifecycle(TextFieldValue(""))
+
+    val previewItem = remember { mutableStateOf<TodoItemInfo?>(null) }
+    val showPreview = remember { mutableStateOf(false) }
 
     val listState: LazyListState = rememberLazyListState()
     val focusManager = LocalFocusManager.current
@@ -91,10 +98,26 @@ fun AssistantScreen(
                 when (entry) {
                     is ChatEntry.UserMessage -> UserBubble(entry.text)
                     is ChatEntry.AiMessage -> AiBubble(entry.text)
-                    is ChatEntry.ItemsInfo -> ItemsInfoList(entry, assistantViewModel)
+                    is ChatEntry.ItemsInfo ->
+                        ItemsInfoList(
+                            entry = entry,
+                            assistantViewModel = assistantViewModel,
+                            onPreview = { item ->
+                                previewItem.value = item
+                                showPreview.value = true
+                            }
+                        )
                 }
             }
         }
+    }
+
+    previewItem.value?.let { item ->
+        TodoItemPreview(
+            item = item,
+            showDialog = showPreview.value,
+            onDismiss = { previewItem.value = null }
+        )
     }
 
     // 自动滚动到最新消息
@@ -175,7 +198,11 @@ private fun AiBubble(text: String) {
 }
 
 @Composable
-private fun ItemsInfoList(entry: ChatEntry.ItemsInfo, viewModel: AssistantViewModel) {
+private fun ItemsInfoList(
+    entry: ChatEntry.ItemsInfo,
+    assistantViewModel: AssistantViewModel,
+    onPreview: (TodoItemInfo) -> Unit
+) {
     Column(modifier = Modifier.fillMaxWidth()) {
         entry.items.forEach { (id, item) ->
             ItemCard(
@@ -184,10 +211,10 @@ private fun ItemsInfoList(entry: ChatEntry.ItemsInfo, viewModel: AssistantViewMo
                     .padding(vertical = 4.dp),
                 item = item,
                 type = CardType.Complete,
-                onItemClicked = {},
-                onDismiss = { viewModel.acceptItem(id) },
-                onDelete = { viewModel.dismissItem(id) }
-            ) {}
+                onItemClicked = { onPreview(item) },
+                onDismiss = { assistantViewModel.acceptItem(id) },
+                onDelete = { assistantViewModel.dismissItem(id) }
+            )
         }
     }
 }
