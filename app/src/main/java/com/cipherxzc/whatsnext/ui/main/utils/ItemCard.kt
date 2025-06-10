@@ -1,4 +1,4 @@
-package com.cipherxzc.whatsnext.ui.todolist.utils
+package com.cipherxzc.whatsnext.ui.main.utils
 
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
@@ -36,15 +36,16 @@ import com.cipherxzc.whatsnext.data.database.TodoItem
 import java.text.SimpleDateFormat
 import java.util.Locale
 
-internal enum class CardType {
+enum class CardType {
     Complete, // 绿底 + 勾
     Reset     // 黄底 + 重置图标
 }
 
 // TODO: 使用 AnchoredDraggable 替代 SwipeToDismiss 实现更复杂的滑动交互
+// TODO: 使用 material3 替代
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-internal fun ItemCard(
+fun ItemCard(
     modifier: Modifier = Modifier,
     item: TodoItem,
     type: CardType,

@@ -1,4 +1,4 @@
-package com.cipherxzc.whatsnext.ui.assistant.viewmodel
+package com.cipherxzc.whatsnext.ui.main.assistant.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

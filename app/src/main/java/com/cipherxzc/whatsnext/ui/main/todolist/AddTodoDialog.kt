@@ -1,5 +1,6 @@
-package com.cipherxzc.whatsnext.ui.todolist
+package com.cipherxzc.whatsnext.ui.main.todolist
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,10 +18,11 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
-import com.cipherxzc.whatsnext.ui.todolist.utils.DatePicker
-import com.cipherxzc.whatsnext.ui.todolist.utils.ImportanceDropdownMenu
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.AddTodoViewModel
+import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.AddTodoViewModel
+import com.cipherxzc.whatsnext.ui.main.utils.DatePicker
+import com.cipherxzc.whatsnext.ui.main.utils.ImportanceDropdownMenu
 
 @Composable
 fun AddTodoDialog(
@@ -84,13 +86,13 @@ fun AddTodoDialog(
                 }
             },
             confirmButton = {
-                val context = androidx.compose.ui.platform.LocalContext.current
+                val context = LocalContext.current
                 TextButton(
                     onClick = {
-                        android.widget.Toast.makeText(
+                        Toast.makeText(
                             context,
                             addTodoViewModel.addTodo(),
-                            android.widget.Toast.LENGTH_SHORT
+                            Toast.LENGTH_SHORT
                         ).show()
                     }
                 ) {

@@ -1,10 +1,10 @@
-package com.cipherxzc.whatsnext.ui.todolist.viewmodel
+package com.cipherxzc.whatsnext.ui.main.todolist.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.cipherxzc.whatsnext.data.database.TodoItem
-import com.cipherxzc.whatsnext.ui.assistant.viewmodel.AzureViewModel
+import com.cipherxzc.whatsnext.ui.main.assistant.viewmodel.AzureViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

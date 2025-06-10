@@ -1,4 +1,4 @@
-package com.cipherxzc.whatsnext.ui.todolist
+package com.cipherxzc.whatsnext.ui.main.todolist
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.TabRowDefaults.Divider
+import androidx.compose.material3.Divider
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -27,9 +27,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.cipherxzc.whatsnext.ui.core.common.LoadingScreen
-import com.cipherxzc.whatsnext.ui.todolist.utils.DatePicker
-import com.cipherxzc.whatsnext.ui.todolist.utils.ImportanceDropdownMenu
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoDetailViewModel
+import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoDetailViewModel
+import com.cipherxzc.whatsnext.ui.main.utils.DatePicker
+import com.cipherxzc.whatsnext.ui.main.utils.ImportanceDropdownMenu
 
 @Composable
 fun TodoDetailScreen(

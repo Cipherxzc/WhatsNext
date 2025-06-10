@@ -1,4 +1,4 @@
-package com.cipherxzc.whatsnext.ui.todolist
+package com.cipherxzc.whatsnext.ui.main.todolist
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -25,10 +25,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.cipherxzc.whatsnext.ui.todolist.utils.CardType
-import com.cipherxzc.whatsnext.ui.todolist.utils.ItemCard
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoListViewModel
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.WhatsNextViewModel
+import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModel
+import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.WhatsNextViewModel
+import com.cipherxzc.whatsnext.ui.main.utils.CardType
+import com.cipherxzc.whatsnext.ui.main.utils.ItemCard
 
 @Composable
 fun WhatsNextDialog(

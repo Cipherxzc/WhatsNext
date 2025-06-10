@@ -1,4 +1,4 @@
-package com.cipherxzc.whatsnext.ui.todolist.utils
+package com.cipherxzc.whatsnext.ui.main.utils
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement

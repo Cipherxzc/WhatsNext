@@ -1,4 +1,4 @@
-package com.cipherxzc.whatsnext.ui.todolist
+package com.cipherxzc.whatsnext.ui.main.todolist
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,13 +36,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.cipherxzc.whatsnext.ui.assistant.viewmodel.AzureViewModel
 import com.cipherxzc.whatsnext.ui.core.viewmodel.SyncViewModel
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.AddTodoViewModel
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.AddTodoViewModelFactory
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoListViewModel
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.WhatsNextViewModel
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.WhatsNextViewModelFactory
+import com.cipherxzc.whatsnext.ui.main.assistant.viewmodel.AzureViewModel
+import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.AddTodoViewModel
+import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.AddTodoViewModelFactory
+import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModel
+import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.WhatsNextViewModel
+import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.WhatsNextViewModelFactory
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

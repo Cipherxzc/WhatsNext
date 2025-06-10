@@ -1,4 +1,4 @@
-package com.cipherxzc.whatsnext.ui.todolist.viewmodel
+package com.cipherxzc.whatsnext.ui.main.todolist.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

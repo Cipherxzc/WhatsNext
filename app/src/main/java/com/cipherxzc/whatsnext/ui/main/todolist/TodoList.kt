@@ -1,4 +1,4 @@
-package com.cipherxzc.whatsnext.ui.todolist
+package com.cipherxzc.whatsnext.ui.main.todolist
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
@@ -29,9 +29,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.cipherxzc.whatsnext.data.database.TodoItem
 import com.cipherxzc.whatsnext.ui.core.common.LoadingScreen
-import com.cipherxzc.whatsnext.ui.todolist.utils.CardType
-import com.cipherxzc.whatsnext.ui.todolist.utils.ItemCard
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoListViewModel
+import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModel
+import com.cipherxzc.whatsnext.ui.main.utils.CardType
+import com.cipherxzc.whatsnext.ui.main.utils.ItemCard
 
 @Composable
 fun TodoList(

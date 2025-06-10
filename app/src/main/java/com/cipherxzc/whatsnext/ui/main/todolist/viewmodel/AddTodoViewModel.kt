@@ -1,4 +1,4 @@
-package com.cipherxzc.whatsnext.ui.todolist.viewmodel
+package com.cipherxzc.whatsnext.ui.main.todolist.viewmodel
 
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel

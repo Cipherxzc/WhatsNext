@@ -1,4 +1,4 @@
-package com.cipherxzc.whatsnext.ui.todolist
+package com.cipherxzc.whatsnext.ui.main.todolist
 
 import android.app.Application
 import androidx.compose.runtime.Composable
@@ -9,14 +9,14 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.cipherxzc.whatsnext.ui.assistant.viewmodel.AzureViewModel
 import com.cipherxzc.whatsnext.ui.core.viewmodel.SyncViewModel
 import com.cipherxzc.whatsnext.ui.core.viewmodel.SyncViewModelFactory
 import com.cipherxzc.whatsnext.ui.core.viewmodel.TodoDataViewModel
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoDetailViewModel
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoDetailViewModelFactory
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoListViewModel
-import com.cipherxzc.whatsnext.ui.todolist.viewmodel.TodoListViewModelFactory
+import com.cipherxzc.whatsnext.ui.main.assistant.viewmodel.AzureViewModel
+import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoDetailViewModel
+import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoDetailViewModelFactory
+import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModel
+import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModelFactory
 
 @Composable
 fun TodoListNavGraph(

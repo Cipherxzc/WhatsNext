@@ -5,13 +5,13 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.cipherxzc.whatsnext.ui.assistant.viewmodel.AzureViewModel
-import com.cipherxzc.whatsnext.ui.assistant.viewmodel.AzureViewModelFactory
 import com.cipherxzc.whatsnext.ui.auth.AuthNavGraph
 import com.cipherxzc.whatsnext.ui.auth.viewmodel.AuthViewModel
 import com.cipherxzc.whatsnext.ui.core.common.ErrorScreen
 import com.cipherxzc.whatsnext.ui.core.viewmodel.TodoDataViewModel
-import com.cipherxzc.whatsnext.ui.todolist.TodoListNavGraph
+import com.cipherxzc.whatsnext.ui.main.MainScreen
+import com.cipherxzc.whatsnext.ui.main.assistant.viewmodel.AzureViewModel
+import com.cipherxzc.whatsnext.ui.main.assistant.viewmodel.AzureViewModelFactory
 
 @Composable
 fun WhatsNextApp() {
@@ -22,7 +22,7 @@ fun WhatsNextApp() {
         factory = AzureViewModelFactory(todoDataViewModel)
     )
 
-    val startRoute = if (authViewModel.currentUser() != null) "main" else "auth"
+    val startRoute = if (authViewModel.currentUser() != null) "todolist" else "auth"
 
     NavHost(navController, startDestination = startRoute) {
         // auth 模块
@@ -30,7 +30,7 @@ fun WhatsNextApp() {
             AuthNavGraph(
                 authViewModel=authViewModel,
                 onLoginSuccess = {
-                    navController.navigate("main") {
+                    navController.navigate("todolist") {
                         popUpTo("auth") { inclusive = true }
                     }
                 },
@@ -40,20 +40,20 @@ fun WhatsNextApp() {
             )
         }
         // main 模块
-        composable("main") {
+        composable("todolist") {
             val currentUser = authViewModel.currentUser()
             if (currentUser == null) {
                 ErrorScreen("用户未登录")
             } else{
                 todoDataViewModel.setCurrentUser(currentUser.uid)
-                TodoListNavGraph(
+                MainScreen(
                     userName = currentUser.displayName ?: "tourist",
                     todoDataViewModel = todoDataViewModel,
                     azureViewModel = azureViewModel,
                     onLogout = {
                         authViewModel.logout()
                         todoDataViewModel.resetCurrentUser()
-                        navController.navigate("auth") {
+                        navController.navigate("todolist") {
                             popUpTo("main") { inclusive = true }
                         }
                     }
