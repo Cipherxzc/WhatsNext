@@ -20,10 +20,8 @@ import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModelFacto
 
 @Composable
 fun TodoListNavGraph(
-    userName: String,
     todoDataViewModel: TodoDataViewModel,
-    azureViewModel: AzureViewModel,
-    onLogout: () -> Unit
+    azureViewModel: AzureViewModel
 ){
     val todoListViewModel: TodoListViewModel = viewModel(
         factory = TodoListViewModelFactory(todoDataViewModel)
@@ -37,14 +35,12 @@ fun TodoListNavGraph(
         composable("itemList") {
             todoListViewModel.loadItems()
             TodoListScreen(
-                userName = userName,
                 todoListViewModel = todoListViewModel,
                 azureViewModel = azureViewModel,
                 syncViewModel = syncViewModel,
                 onItemClicked = { itemId ->
                     navController.navigate("itemDetail/$itemId")
-                },
-                onLogout = onLogout
+                }
             )
         }
         composable(

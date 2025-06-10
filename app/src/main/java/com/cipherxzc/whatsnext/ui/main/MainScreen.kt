@@ -4,17 +4,23 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.text.font.FontWeight
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -29,6 +35,7 @@ private sealed class BottomNavItem(val route: String, val icon: ImageVector, val
     object Assistant : BottomNavItem("assistant", Icons.Default.Person, "AI助手")
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun MainScreen(
     userName: String,
@@ -47,6 +54,26 @@ fun MainScreen(
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding(),
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = userName,
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
+                },
+                actions = {
+                    IconButton(onClick = onLogout) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Outlined.ExitToApp,
+                            contentDescription = "Logout"
+                        )
+                    }
+                }
+            )
+        },
         bottomBar = {
             NavigationBar {
                 val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
@@ -76,10 +103,8 @@ fun MainScreen(
         ) {
             composable(BottomNavItem.TodoList.route) {
                 TodoListNavGraph(
-                    userName = userName,
                     todoDataViewModel = todoDataViewModel,
-                    azureViewModel = azureViewModel,
-                    onLogout = onLogout
+                    azureViewModel = azureViewModel
                 )
             }
             composable(BottomNavItem.Report.route) {
