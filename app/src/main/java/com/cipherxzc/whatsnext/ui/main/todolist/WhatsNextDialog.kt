@@ -85,7 +85,7 @@ fun WhatsNextDialog(
 
                     recommendedItems.forEach { (item, reason) ->
                         ItemCard(
-                            item = item,
+                            item = item.toInfo(),
                             type = CardType.Complete,
                             onItemClicked = { onItemClicked(item.id) },
                             onDismiss = { todoListViewModel.complete(item.id) },

@@ -16,11 +16,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cipherxzc.whatsnext.data.database.TodoItem
 import com.cipherxzc.whatsnext.ui.core.common.LoadingScreen
 import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModel
@@ -30,18 +30,17 @@ import com.cipherxzc.whatsnext.ui.main.utils.ItemCard
 @Composable
 fun TodoList(
     todoListViewModel: TodoListViewModel,
-    onItemClicked: (String) -> Unit,
-    onAddTodoClicked: () -> Unit,
+    onItemClicked: (String) -> Unit
 ) {
-    val isLoading by todoListViewModel.isLoadingFlow.collectAsState()
+    val isLoading by todoListViewModel.isLoadingFlow.collectAsStateWithLifecycle()
 
-    val overdueItems by todoListViewModel.overdueItemsFlow.collectAsState()
-    val todoItems by todoListViewModel.todoItemsFlow.collectAsState()
-    val completedItems by todoListViewModel.completedItemsFlow.collectAsState()
+    val overdueItems by todoListViewModel.overdueItemsFlow.collectAsStateWithLifecycle()
+    val todoItems by todoListViewModel.todoItemsFlow.collectAsStateWithLifecycle()
+    val completedItems by todoListViewModel.completedItemsFlow.collectAsStateWithLifecycle()
 
-    val overdueExpend by todoListViewModel.overdueExpendFlow.collectAsState()
-    val todoExpend by todoListViewModel.todoExpendFlow.collectAsState()
-    val completedExpend by todoListViewModel.completedExpendFlow.collectAsState()
+    val overdueExpend by todoListViewModel.overdueExpendFlow.collectAsStateWithLifecycle()
+    val todoExpend by todoListViewModel.todoExpendFlow.collectAsStateWithLifecycle()
+    val completedExpend by todoListViewModel.completedExpendFlow.collectAsStateWithLifecycle()
 
     if (isLoading) {
         LoadingScreen("TodoList")
@@ -127,7 +126,7 @@ internal fun LazyListScope.collapsibleItemList(
         items(items, key = { "$title-${it.id}" }) { item ->
             ItemCard(
                 modifier = Modifier.animateItem(),
-                item = item,
+                item = item.toInfo(),
                 onItemClicked = { onItemClicked(item.id) },
                 onDismiss = { onDismiss(item.id) },
                 onDelete = { onDelete(item.id) },

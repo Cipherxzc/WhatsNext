@@ -1,12 +1,12 @@
 package com.cipherxzc.whatsnext.ui.auth
 
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.cipherxzc.whatsnext.ui.auth.viewmodel.AuthViewModel
-import androidx.compose.runtime.getValue
 
 @Composable
 fun AuthNavGraph(
@@ -18,7 +18,7 @@ fun AuthNavGraph(
 
     NavHost(navController, startDestination = "login") {
         composable("login") {
-            val state by authViewModel.loginState.collectAsState()
+            val state by authViewModel.loginState.collectAsStateWithLifecycle()
             LoginScreen(
                 onLogin = authViewModel::login,
                 onNavigateToRegister = { navController.navigate("register") },
@@ -27,7 +27,7 @@ fun AuthNavGraph(
             )
         }
         composable("register") {
-            val state by authViewModel.registerState.collectAsState()
+            val state by authViewModel.registerState.collectAsStateWithLifecycle()
             RegisterScreen(
                 onRegister = authViewModel::register,
                 onNavigateToLogin = { navController.popBackStack() },

@@ -21,14 +21,18 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.cipherxzc.whatsnext.ui.core.viewmodel.TodoDataViewModel
 import com.cipherxzc.whatsnext.ui.main.assistant.AssistantScreen
+import com.cipherxzc.whatsnext.ui.main.assistant.viewmodel.AssistantViewModel
 import com.cipherxzc.whatsnext.ui.main.assistant.viewmodel.AzureViewModel
 import com.cipherxzc.whatsnext.ui.main.todolist.TodoListNavGraph
+import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModel
+import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModelFactory
 
 private sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
     object TodoList : BottomNavItem("todolist", Icons.Default.List, "TodoList")
@@ -49,6 +53,13 @@ fun MainScreen(
         BottomNavItem.TodoList,
         BottomNavItem.Report,
         BottomNavItem.Assistant
+    )
+
+    val todoListViewModel: TodoListViewModel = viewModel(
+        factory = TodoListViewModelFactory(todoDataViewModel)
+    )
+    val assistantViewModel: AssistantViewModel = viewModel(
+        factory = AssistantViewModel.factory(azureViewModel, todoDataViewModel)
     )
 
     Scaffold(
@@ -105,6 +116,7 @@ fun MainScreen(
             composable(BottomNavItem.TodoList.route) {
                 TodoListNavGraph(
                     todoDataViewModel = todoDataViewModel,
+                    todoListViewModel = todoListViewModel,
                     azureViewModel = azureViewModel
                 )
             }
@@ -112,7 +124,8 @@ fun MainScreen(
                 Text("视图（TODO）")
             }
             composable(BottomNavItem.Assistant.route) {
-                AssistantScreen()
+                assistantViewModel.initAssistant()
+                AssistantScreen(assistantViewModel)
             }
         }
     }

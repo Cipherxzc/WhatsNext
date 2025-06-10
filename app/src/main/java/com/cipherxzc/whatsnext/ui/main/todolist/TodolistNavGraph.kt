@@ -16,16 +16,13 @@ import com.cipherxzc.whatsnext.ui.main.assistant.viewmodel.AzureViewModel
 import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoDetailViewModel
 import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoDetailViewModelFactory
 import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModel
-import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModelFactory
 
 @Composable
 fun TodoListNavGraph(
     todoDataViewModel: TodoDataViewModel,
+    todoListViewModel: TodoListViewModel,
     azureViewModel: AzureViewModel
 ){
-    val todoListViewModel: TodoListViewModel = viewModel(
-        factory = TodoListViewModelFactory(todoDataViewModel)
-    )
     val syncViewModel: SyncViewModel = viewModel(
         factory = SyncViewModelFactory(LocalContext.current.applicationContext as Application, todoDataViewModel)
     )

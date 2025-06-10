@@ -32,7 +32,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.cipherxzc.whatsnext.data.database.TodoItem
+import com.cipherxzc.whatsnext.data.database.TodoItemInfo
 import java.text.SimpleDateFormat
 import java.util.Locale
 
@@ -47,7 +47,7 @@ enum class CardType {
 @Composable
 fun ItemCard(
     modifier: Modifier = Modifier,
-    item: TodoItem,
+    item: TodoItemInfo,
     type: CardType,
     onItemClicked: () -> Unit,
     onDismiss: () -> Unit,
@@ -153,7 +153,7 @@ fun ItemCard(
                         )
                         item.dueDate?.let { ts ->
                             Text(
-                                text = dateFormat.format(ts.toDate()),
+                                text = dateFormat.format(ts),
                             )
                         }
                     }

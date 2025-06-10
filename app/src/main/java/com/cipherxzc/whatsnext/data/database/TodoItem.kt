@@ -31,6 +31,15 @@ data class TodoItem (
     fun isOverdue(): Boolean {
         return dueDate != null && dueDate < Timestamp.now()
     }
+
+    fun toInfo(): TodoItemInfo {
+        return TodoItemInfo(
+            title = title,
+            detail = detail,
+            dueDate = dueDate?.toDate(),
+            importance = importance
+        )
+    }
 }
 
 object DateSerializer : KSerializer<Date> {

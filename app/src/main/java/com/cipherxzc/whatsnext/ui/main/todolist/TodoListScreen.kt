@@ -93,8 +93,7 @@ fun TodoListScreen(
 
                 TodoList(
                     todoListViewModel = todoListViewModel,
-                    onItemClicked = onItemClicked,
-                    onAddTodoClicked = addTodoViewModel::showDialog,
+                    onItemClicked = onItemClicked
                 )
             }
 

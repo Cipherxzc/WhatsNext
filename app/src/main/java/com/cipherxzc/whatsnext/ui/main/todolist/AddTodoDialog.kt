@@ -12,7 +12,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,6 +19,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.AddTodoViewModel
 import com.cipherxzc.whatsnext.ui.main.utils.DatePicker
 import com.cipherxzc.whatsnext.ui.main.utils.ImportanceDropdownMenu
@@ -28,12 +28,12 @@ import com.cipherxzc.whatsnext.ui.main.utils.ImportanceDropdownMenu
 fun AddTodoDialog(
     addTodoViewModel: AddTodoViewModel
 ){
-    val showDialog by addTodoViewModel.showDialogFlow.collectAsState()
+    val showDialog by addTodoViewModel.showDialogFlow.collectAsStateWithLifecycle()
 
-    val newTitle by addTodoViewModel.titleFlow.collectAsState()
-    val newDetail by addTodoViewModel.detailFlow.collectAsState()
-    val newDueDate by addTodoViewModel.dueDateFlow.collectAsState()
-    val newImportance by addTodoViewModel.importanceFlow.collectAsState()
+    val newTitle by addTodoViewModel.titleFlow.collectAsStateWithLifecycle()
+    val newDetail by addTodoViewModel.detailFlow.collectAsStateWithLifecycle()
+    val newDueDate by addTodoViewModel.dueDateFlow.collectAsStateWithLifecycle()
+    val newImportance by addTodoViewModel.importanceFlow.collectAsStateWithLifecycle()
 
     var showCalendar by remember { mutableStateOf(false) }
 

@@ -151,9 +151,7 @@ class AzureViewModel(
         azureRepository.append("Todo list:\n")
         azureRepository.append(todoItems)
 
-        userPrompt.let {
-            azureRepository.append(it)
-        }
+        azureRepository.append(userPrompt)
 
         val response = azureRepository.sendToLLM(
             asJson = true,

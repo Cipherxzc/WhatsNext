@@ -1,5 +1,6 @@
 package com.cipherxzc.whatsnext.ui.main.assistant.viewmodel
 
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -22,11 +23,22 @@ class AssistantViewModel(
 ) : ViewModel() {
     private var currentId = 0
 
-    private val _history = MutableStateFlow<MutableList<ChatEntry>>(mutableListOf())
+    private val _history = MutableStateFlow<List<ChatEntry>>(emptyList())
     val history: StateFlow<List<ChatEntry>> = _history.asStateFlow()
 
+    private val _inputFlow = MutableStateFlow(TextFieldValue(""))
+    val inputFlow: StateFlow<TextFieldValue> = _inputFlow.asStateFlow()
+
+    fun setInput(input: TextFieldValue) {
+        _inputFlow.value = input
+    }
+
     fun clearHistory() {
-        _history.value = mutableListOf()
+        _history.value = emptyList()
+    }
+
+    fun initAssistant() {
+        azureViewModel.initChat()
     }
 
     private fun assignId(): Int {
@@ -34,32 +46,38 @@ class AssistantViewModel(
         return currentId
     }
 
-    fun sendMessage(userPrompt: String) {
-        _history.value.addLast(ChatEntry.UserMessage(userPrompt))
+    fun sendMessage() {
+        val userPrompt = inputFlow.value.text.trim()
+        if (userPrompt.isEmpty()) {
+            return
+        }
+
+        _history.value = _history.value + ChatEntry.UserMessage(userPrompt)
+        _inputFlow.value = TextFieldValue("") // 清空输入框
 
         viewModelScope.launch {
             val result = azureViewModel.chat(userPrompt)
 
             if (result == null) {
                 // 超时或网络错误
-                _history.value.addLast(ChatEntry.AiMessage("⚠️ 请求超时，请稍后再试"))
+                _history.value = _history.value + ChatEntry.AiMessage("⚠️ 请求超时，请稍后再试")
                 return@launch
             }
 
             val (newItems, reply) = result
 
-            _history.value.addLast(ChatEntry.AiMessage(reply))
+            _history.value = _history.value + ChatEntry.AiMessage(reply)
 
             if (newItems.isNotEmpty()) {
                 val newIdItems = newItems.map { item -> assignId() to item }
-                _history.value.addLast(ChatEntry.ItemsInfo(newIdItems))
+                _history.value = _history.value + ChatEntry.ItemsInfo(newIdItems)
             }
         }
     }
 
     private fun deleteItem(id: Int) {
         val currentHistory = _history.value
-        val updatedHistory = currentHistory.mapNotNull { entry ->
+        _history.value = currentHistory.mapNotNull { entry ->
             when (entry) {
                 is ChatEntry.ItemsInfo -> {
                     val filteredItems = entry.items.filterNot { it.first == id }
@@ -68,7 +86,6 @@ class AssistantViewModel(
                 else -> entry
             }
         }
-        _history.value = updatedHistory as MutableList<ChatEntry>
     }
 
     fun acceptItem(id: Int) {
