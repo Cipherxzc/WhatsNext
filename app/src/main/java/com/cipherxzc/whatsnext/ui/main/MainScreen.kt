@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -122,7 +123,11 @@ fun MainScreen(
                 )
             }
             composable(BottomNavItem.Report.route) {
-                AnalyticsScreen()
+                val todoItems = todoListViewModel.todoItemsFlow.collectAsStateWithLifecycle().value
+                val overdueItems = todoListViewModel.overdueItemsFlow.collectAsStateWithLifecycle().value
+                AnalyticsScreen(
+                    todoItems = todoItems + overdueItems
+                )
             }
             composable(BottomNavItem.Assistant.route) {
                 assistantViewModel.initAssistant()

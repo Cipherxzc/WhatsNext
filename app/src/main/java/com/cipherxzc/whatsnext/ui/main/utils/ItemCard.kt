@@ -53,7 +53,7 @@ fun ItemCard(
     onItemClicked: () -> Unit = {},
     onLongPress: () -> Unit = {},
     onDismiss: () -> Unit = {},
-    onDelete: () -> Unit = {},
+    onDelete: (() -> Unit)? = null,
     content: @Composable () -> Unit = {}
 ) {
     // 根据类型选择背景色和图标
@@ -72,7 +72,7 @@ fun ItemCard(
                 onDismiss()
             }
             DismissValue.DismissedToStart -> {
-                onDelete()
+                onDelete?.let { it() }
             }
             else -> {
                 // Do nothing
@@ -81,7 +81,7 @@ fun ItemCard(
         false
     }
     val progress by animateFloatAsState(dismissState.progress.fraction)
-    val dismissThreshold = remember { 0.6f }
+    val dismissThreshold = remember { 0.8f }
 
     Card(
         modifier = modifier
@@ -94,7 +94,9 @@ fun ItemCard(
         SwipeToDismiss(
             modifier = Modifier.fillMaxWidth(),
             state = dismissState,
-            directions = setOf(DismissDirection.StartToEnd, DismissDirection.EndToStart),
+            directions = setOf(DismissDirection.StartToEnd).let { directions ->
+                if (onDelete != null) directions + DismissDirection.EndToStart else directions
+            },
             dismissThresholds = { direction -> FractionalThreshold(dismissThreshold) },
             background = {
                 val direction = dismissState.dismissDirection

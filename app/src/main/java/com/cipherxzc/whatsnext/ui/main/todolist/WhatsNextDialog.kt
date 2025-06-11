@@ -20,6 +20,7 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -88,35 +89,40 @@ fun WhatsNextDialog(
                     }
 
                     recommendedItems.forEach { (item, reason) ->
-                        ItemCard(
-                            item = item.toInfo(),
-                            type = CardType.Complete,
-                            onItemClicked = { previewItem.value = item.toInfo() },
-                            onLongPress = { navigateDetail(item.id) },
-                            onDismiss = { todoListViewModel.complete(item.id) },
-                            onDelete = { todoListViewModel.deleteItem(item.id) },
-                        ) {
-                            Column(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .padding(4.dp)
-                                    .background(
-                                        MaterialTheme.colorScheme.surface,
-                                        shape = RoundedCornerShape(12.dp)
-                                    )
+                        key(item.id) {
+                            ItemCard(
+                                item = item.toInfo(),
+                                type = CardType.Complete,
+                                onItemClicked = { previewItem.value = item.toInfo() },
+                                onLongPress = { navigateDetail(item.id) },
+                                onDismiss = {
+                                    todoListViewModel.complete(item.id)
+                                    whatsNextViewModel.dismissRecommendation(item.id)
+                                },
+                                onDelete = null,
                             ) {
-                                Text(
-                                    modifier = Modifier.padding(horizontal = 8.dp),
-                                    text = "推荐理由:",
-                                    style = MaterialTheme.typography.labelLarge
-                                )
-                                Text(
-                                    modifier = Modifier.padding(horizontal = 8.dp),
-                                    text = reason,
-                                    style = MaterialTheme.typography.bodyMedium.copy(
-                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .padding(4.dp)
+                                        .background(
+                                            MaterialTheme.colorScheme.surface,
+                                            shape = RoundedCornerShape(12.dp)
+                                        )
+                                ) {
+                                    Text(
+                                        modifier = Modifier.padding(horizontal = 8.dp),
+                                        text = "推荐理由:",
+                                        style = MaterialTheme.typography.labelLarge
                                     )
-                                )
+                                    Text(
+                                        modifier = Modifier.padding(horizontal = 8.dp),
+                                        text = reason,
+                                        style = MaterialTheme.typography.bodyMedium.copy(
+                                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                                        )
+                                    )
+                                }
                             }
                         }
                     }

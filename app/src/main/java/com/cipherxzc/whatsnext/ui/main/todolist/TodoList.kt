@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowLeft
 import androidx.compose.material.icons.filled.KeyboardArrowDown
@@ -48,6 +50,9 @@ fun TodoList(
 
     val previewItem = remember { mutableStateOf<TodoItemInfo?>(null) }
 
+    val showDeleteDialog = remember { mutableStateOf(false) }
+    val itemToDelete = remember { mutableStateOf<TodoItem?>(null) }
+
     if (isLoading) {
         LoadingScreen("TodoList")
         return
@@ -70,8 +75,11 @@ fun TodoList(
                 onToggleExpand = { todoListViewModel.expand("overdue") },
                 onItemClicked = { previewItem.value = it.toInfo() },
                 onLongPress = { navigateDetail(it.id) },
-                onDismiss = { todoListViewModel.reset(it.id) },
-                onDelete = { todoListViewModel.deleteItem(it.id) }
+                onDismiss = { todoListViewModel.complete(it.id) },
+                onDelete = {
+                    itemToDelete.value = it
+                    showDeleteDialog.value = true
+                }
             )
 
             collapsibleItemList(
@@ -82,8 +90,11 @@ fun TodoList(
                 onToggleExpand = { todoListViewModel.expand("todo") },
                 onItemClicked = { previewItem.value = it.toInfo() },
                 onLongPress = { navigateDetail(it.id) },
-                onDismiss = { todoListViewModel.reset(it.id) },
-                onDelete = { todoListViewModel.deleteItem(it.id) }
+                onDismiss = { todoListViewModel.complete(it.id) },
+                onDelete = {
+                    itemToDelete.value = it
+                    showDeleteDialog.value = true
+                }
             )
 
             collapsibleItemList(
@@ -95,7 +106,10 @@ fun TodoList(
                 onItemClicked = { previewItem.value = it.toInfo() },
                 onLongPress = { navigateDetail(it.id) },
                 onDismiss = { todoListViewModel.reset(it.id) },
-                onDelete = { todoListViewModel.deleteItem(it.id) }
+                onDelete = {
+                    itemToDelete.value = it
+                    showDeleteDialog.value = true
+                }
             )
         }
     }
@@ -104,6 +118,27 @@ fun TodoList(
         TodoItemPreview(
             item = item,
             onDismiss = { previewItem.value = null }
+        )
+    }
+
+    if (showDeleteDialog.value) {
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog.value = false },
+            title = { Text("删除确认") },
+            text = { Text("确定要删除这一Todo项吗?该操作无法恢复") },
+            confirmButton = {
+                Button(onClick = {
+                    itemToDelete.value?.let { todoListViewModel.deleteItem(it.id) }
+                    showDeleteDialog.value = false
+                }) {
+                    Text("删除")
+                }
+            },
+            dismissButton = {
+                Button(onClick = { showDeleteDialog.value = false }) {
+                    Text("取消")
+                }
+            }
         )
     }
 }

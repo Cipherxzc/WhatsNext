@@ -2,9 +2,12 @@ package com.cipherxzc.whatsnext.ui.main.analytics
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -24,20 +27,21 @@ import com.cipherxzc.whatsnext.data.database.TodoItemInfo
 import com.cipherxzc.whatsnext.ui.main.utils.TodoItemPreview
 
 @Composable
-fun AnalyticsScreen() {
+fun AnalyticsScreen(
+    todoItems: List<TodoItem>,
+) {
     val previewItem = remember { mutableStateOf<TodoItemInfo?>(null) }
 
-    TodoQuadrantChart(
-        items = listOf(TodoItem(
-            id = "1",
-            userId = "user123",
-            title = "Sample Task",
-            detail = "This is a sample task for testing.",
-            dueDate = null, // No due date
-            importance = 7
-        )),
-        onItemClick = { previewItem.value = it.toInfo() }
-    )
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .verticalScroll(rememberScrollState())
+    ){
+        TodoQuadrantChart(
+            items = todoItems,
+            onItemClick = { previewItem.value = it.toInfo() }
+        )
+    }
 
     previewItem.value?.let { item ->
         TodoItemPreview(
@@ -75,6 +79,7 @@ fun TodoQuadrantChart(
                 }
             }
     ) {
+        // 画笔
         val axisStroke = Stroke(width = 3.dp.toPx())
         val dashStroke = Stroke(
             width = 1.dp.toPx(),
@@ -94,12 +99,11 @@ fun TodoQuadrantChart(
 
         // 坐标转换 λ
         fun xPos(days: Float) =
-            originX + (days.coerceIn(0f, maxDays.toFloat()) / maxDays) * plotW
+            originX + ((days.coerceIn(0f, maxDays.toFloat()) + 1f) / (maxDays + 2)) * plotW
 
         fun yPos(importance: Float) =
-            originY - (importance.coerceIn(0f, 10f) / 10f) * plotH
+            originY - ((importance.coerceIn(0f, 10f) + 1f) / 12f) * plotH
 
-        /* ---------- 1. 坐标轴 & 分割线 ---------- */
         // 主轴
         drawLine(
             color = Color.Black,
@@ -139,7 +143,7 @@ fun TodoQuadrantChart(
             strokeWidth = axisStroke.width
         )
 
-        // 中线（分四象限）
+        // 四象限分割线
         val midV = xPos(urgentDays.toFloat())
         val midH = yPos(importanceCut.toFloat())
         drawLine(
@@ -157,7 +161,7 @@ fun TodoQuadrantChart(
             end   = Offset(originX + plotW, midH)
         )
 
-        /* ---------- 2. 标注文字 ---------- */
+        // 标注文字
         drawContext.canvas.nativeCanvas.apply {
             val textPaint = android.graphics.Paint().apply {
                 isAntiAlias = true
@@ -166,21 +170,21 @@ fun TodoQuadrantChart(
             }
             // 轴 Label
             drawText("Important", originX - 24.dp.toPx(), topPad - 4.dp.toPx(), textPaint)
-            drawText("Urgent →", originX + plotW + 4.dp.toPx(), originY + 4.dp.toPx(), textPaint)
+            drawText("Not urgent", originX + plotW - 50.dp.toPx(), originY + 20.dp.toPx(), textPaint)
 
             // 象限提示（可根据需求自定义）
             textPaint.textSize = 12.sp.toPx()
-            textPaint.color = android.graphics.Color.RED
-            drawText("Do Now", originX + 4.dp.toPx(), midH - 8.dp.toPx(), textPaint)
+            textPaint.color = android.graphics.Color.BLUE
+            drawText("Do Later", originX + 4.dp.toPx(), midH + 12.dp.toPx(), textPaint)
 
             textPaint.color = android.graphics.Color.rgb(255, 165, 0) // orange
-            drawText("Important\nnot urgent", midV + 6.dp.toPx(), midH - 8.dp.toPx(), textPaint)
-
-            textPaint.color = android.graphics.Color.BLUE
-            drawText("Do Later", midV + 6.dp.toPx(), originY - 4.dp.toPx(), textPaint)
+            drawText("Important not urgent", midV + 4.dp.toPx(), topPad + 24.dp.toPx(), textPaint)
 
             textPaint.color = android.graphics.Color.rgb(0, 128, 0) // green
-            drawText("Low Priority", midV - 80.dp.toPx(), topPad + 16.dp.toPx(), textPaint)
+            drawText("Low Priority", midV + 4.dp.toPx(), midH + 12.dp.toPx(), textPaint)
+
+            textPaint.color = android.graphics.Color.RED
+            drawText("Do Now", originX + 4.dp.toPx(), topPad + 24.dp.toPx(), textPaint)
         }
 
         /* ---------- 3. 绘制任务节点 ---------- */

@@ -46,6 +46,10 @@ class WhatsNextViewModel(
             }
         }
     }
+
+    fun dismissRecommendation(itemId: String) {
+        _recommendedItemsFlow.value = _recommendedItemsFlow.value.filter { it.first.id != itemId }
+    }
 }
 
 class WhatsNextViewModelFactory(
