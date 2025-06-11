@@ -151,7 +151,7 @@ fun WhatsNextDialog(
                                             Text(
                                                 text  = reason,
                                                 style = MaterialTheme.typography.bodyMedium,
-                                                color = MaterialTheme.colorScheme.onSecondaryContainer,
+                                                color = MaterialTheme.colorScheme.onSurface,
                                                 modifier = Modifier.padding(top = 2.dp)
                                             )
                                         }

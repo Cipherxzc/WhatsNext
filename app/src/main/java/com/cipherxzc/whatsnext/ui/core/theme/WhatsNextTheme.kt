@@ -12,7 +12,7 @@ fun WhatsNextTheme(
     useDarkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val useDynamic = false
+    val useDynamic = true
     val colors =
         if (useDynamic)
             if (useDarkTheme) dynamicDarkColorScheme(LocalContext.current)
