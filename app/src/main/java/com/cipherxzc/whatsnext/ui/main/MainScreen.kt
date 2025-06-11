@@ -72,33 +72,6 @@ fun MainScreen(
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding(),
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = userName,
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                },
-                actions = {
-                    IconButton(
-                        onClick = onLogout,
-                        modifier = Modifier.animateContentSize()
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Outlined.ExitToApp,
-                            contentDescription = "Logout",
-                            tint = MaterialTheme.colorScheme.onSurface
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(4.dp)
-                )
-            )
-        },
         bottomBar = {
             NavigationBar(
                 containerColor = MaterialTheme.colorScheme.surface,
@@ -145,6 +118,7 @@ fun MainScreen(
         ) {
             composable(BottomNavItem.TodoList.route) {
                 TodoListNavGraph(
+                    todoListTopBar = { TodoListTopBar(userName, onLogout) },
                     todoDataViewModel = todoDataViewModel,
                     todoListViewModel = todoListViewModel,
                     azureViewModel = azureViewModel
@@ -163,4 +137,37 @@ fun MainScreen(
             }
         }
     }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TodoListTopBar(
+    userName: String,
+    onLogout: () -> Unit
+) {
+    TopAppBar(
+        title = {
+            Text(
+                text = userName,
+                style = MaterialTheme.typography.titleLarge.copy(
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        },
+        actions = {
+            IconButton(
+                onClick = onLogout,
+                modifier = Modifier.animateContentSize()
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Outlined.ExitToApp,
+                    contentDescription = "Logout",
+                    tint = MaterialTheme.colorScheme.onSurface
+                )
+            }
+        },
+        colors = TopAppBarDefaults.topAppBarColors(
+            containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp)
+        )
+    )
 }

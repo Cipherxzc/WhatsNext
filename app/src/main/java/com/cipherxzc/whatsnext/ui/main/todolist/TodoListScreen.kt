@@ -44,6 +44,7 @@ import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.WhatsNextViewModelFact
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoListScreen(
+    todoListTopBar: @Composable () -> Unit,
     todoListViewModel: TodoListViewModel,
     azureViewModel: AzureViewModel,
     syncViewModel: SyncViewModel,
@@ -63,6 +64,7 @@ fun TodoListScreen(
         modifier = Modifier
             .fillMaxSize()
             .systemBarsPadding(),   // 处理状态栏/导航栏
+        topBar = todoListTopBar,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             ExtendedFloatingActionButton(

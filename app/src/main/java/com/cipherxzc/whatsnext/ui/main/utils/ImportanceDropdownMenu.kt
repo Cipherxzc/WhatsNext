@@ -5,7 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -36,8 +35,7 @@ fun ImportanceDropdownMenu(
 
     Row(
         modifier = Modifier
-            .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(vertical = 4.dp)
             .clickable { expanded = true },
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -46,7 +44,8 @@ fun ImportanceDropdownMenu(
         Text(
             text = importance?.toString() ?: "未设置",
             style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.primary
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(top = 3.dp)
         )
         Icon(Icons.Default.ArrowDropDown, contentDescription = "选择重要性")
     }

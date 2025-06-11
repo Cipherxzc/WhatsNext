@@ -4,10 +4,19 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -26,28 +35,46 @@ import com.cipherxzc.whatsnext.data.database.TodoItem
 import com.cipherxzc.whatsnext.data.database.TodoItemInfo
 import com.cipherxzc.whatsnext.ui.main.utils.TodoItemPreview
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AnalyticsScreen(
     todoItems: List<TodoItem>,
 ) {
     val previewItem = remember { mutableStateOf<TodoItemInfo?>(null) }
 
-    Column(
+    Scaffold(
         modifier = Modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-    ){
-        TodoQuadrantChart(
-            items = todoItems,
-            onItemClick = { previewItem.value = it.toInfo() }
-        )
-    }
+            .fillMaxSize()
+            .systemBarsPadding(),
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {
+                    Text(text = "重要✖️紧急四象限")
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp)
+                )
+            )
+        },
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+        ) {
+            TodoQuadrantChart(
+                items = todoItems,
+                onItemClick = { previewItem.value = it.toInfo() }
+            )
+        }
 
-    previewItem.value?.let { item ->
-        TodoItemPreview(
-            item = item,
-            onDismiss = { previewItem.value = null }
-        )
+        previewItem.value?.let { item ->
+            TodoItemPreview(
+                item = item,
+                onDismiss = { previewItem.value = null }
+            )
+        }
     }
 }
 

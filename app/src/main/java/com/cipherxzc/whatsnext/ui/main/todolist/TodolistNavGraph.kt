@@ -19,6 +19,7 @@ import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModel
 
 @Composable
 fun TodoListNavGraph(
+    todoListTopBar: @Composable () -> Unit,
     todoDataViewModel: TodoDataViewModel,
     todoListViewModel: TodoListViewModel,
     azureViewModel: AzureViewModel
@@ -32,6 +33,7 @@ fun TodoListNavGraph(
         composable("itemList") {
             todoListViewModel.loadItems()
             TodoListScreen(
+                todoListTopBar = todoListTopBar,
                 todoListViewModel = todoListViewModel,
                 azureViewModel = azureViewModel,
                 syncViewModel = syncViewModel,

@@ -50,7 +50,8 @@ fun TimePicker(
     }
 
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(0.dp)
     ) {
         NumberPicker(
             value = selectedHour,

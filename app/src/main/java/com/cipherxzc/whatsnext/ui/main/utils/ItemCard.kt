@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
@@ -24,6 +23,7 @@ import androidx.compose.material3.SwipeToDismissBox
 import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberSwipeToDismissBoxState
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.cipherxzc.whatsnext.data.database.TodoItemInfo
 import java.text.SimpleDateFormat
+import java.util.Date
 import java.util.Locale
 
 enum class CardType {
@@ -54,11 +55,11 @@ fun ItemCard(
     content: @Composable () -> Unit = {}
 ) {
     // 根据类型选择背景色和图标
-    val (backgroundColor, icon) = when (type) {
+    val (accentColor, icon) = when (type) {
         CardType.Complete ->
-            Color(0xFFB0E174) to Icons.Default.Check // 更清新的黄绿色
+            Color(0xFFB0E174) to Icons.Default.Check
         CardType.Reset ->
-            Color(0xFFFFEC61) to Icons.Default.Refresh // 更柔和的黄色
+            Color(0xFFFFEC61) to Icons.Default.Refresh
     }
     val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA) }
 
@@ -111,8 +112,8 @@ fun ItemCard(
                                 .background(
                                     Brush.horizontalGradient(
                                         colors = listOf(
-                                            backgroundColor.copy(alpha = 0.5f),
-                                            backgroundColor
+                                            accentColor.copy(alpha = 0.5f),
+                                            accentColor
                                         )
                                     )
                                 ),
@@ -158,22 +159,33 @@ fun ItemCard(
                     .fillMaxWidth()
                     .wrapContentHeight()
                     .background(
-                        MaterialTheme.colorScheme.surfaceVariant,
-                        shape = RoundedCornerShape(12.dp)
+                        MaterialTheme.colorScheme.surfaceColorAtElevation(8.dp),
+                        shape = MaterialTheme.shapes.medium
                     )
             ) {
                 Row(
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(16.dp)
                 ) {
-                    Text(item.title, modifier = Modifier.weight(1f))
-                    item.dueDate?.let { ts ->
-                        Text(dateFormat.format(ts))
+                    Text(
+                        text = item.title,
+                        style = MaterialTheme.typography.titleMedium,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.weight(1f)
+                    )
+
+                    item.dueDate?.let {
+                        Text(
+                            text = dateFormat.format(it),
+                            style = MaterialTheme.typography.bodySmall,
+                            color =
+                                if (it > Date()) MaterialTheme.colorScheme.onSurfaceVariant
+                                else MaterialTheme.colorScheme.error,
+                        )
                     }
                 }
-                content()   // 透传可扩展内容
+
+                content()
             }
         }
     }
