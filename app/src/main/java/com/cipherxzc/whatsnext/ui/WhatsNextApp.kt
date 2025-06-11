@@ -22,7 +22,7 @@ fun WhatsNextApp() {
         factory = AzureViewModelFactory(todoDataViewModel)
     )
 
-    val startRoute = if (authViewModel.currentUser() != null) "todolist" else "auth"
+    val startRoute = if (authViewModel.currentUser() != null) "main" else "auth"
 
     NavHost(navController, startDestination = startRoute) {
         // auth 模块
@@ -30,7 +30,7 @@ fun WhatsNextApp() {
             AuthNavGraph(
                 authViewModel=authViewModel,
                 onLoginSuccess = {
-                    navController.navigate("todolist") {
+                    navController.navigate("main") {
                         popUpTo("auth") { inclusive = true }
                     }
                 },
@@ -40,7 +40,7 @@ fun WhatsNextApp() {
             )
         }
         // main 模块
-        composable("todolist") {
+        composable("main") {
             val currentUser = authViewModel.currentUser()
             if (currentUser == null) {
                 ErrorScreen("用户未登录")
@@ -53,7 +53,7 @@ fun WhatsNextApp() {
                     onLogout = {
                         authViewModel.logout()
                         todoDataViewModel.resetCurrentUser()
-                        navController.navigate("todolist") {
+                        navController.navigate("auth") {
                             popUpTo("main") { inclusive = true }
                         }
                     }

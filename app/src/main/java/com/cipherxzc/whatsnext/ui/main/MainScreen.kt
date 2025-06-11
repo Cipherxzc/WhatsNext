@@ -27,6 +27,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.cipherxzc.whatsnext.ui.core.viewmodel.TodoDataViewModel
+import com.cipherxzc.whatsnext.ui.main.analytics.AnalyticsScreen
 import com.cipherxzc.whatsnext.ui.main.assistant.AssistantScreen
 import com.cipherxzc.whatsnext.ui.main.assistant.viewmodel.AssistantViewModel
 import com.cipherxzc.whatsnext.ui.main.assistant.viewmodel.AzureViewModel
@@ -121,7 +122,7 @@ fun MainScreen(
                 )
             }
             composable(BottomNavItem.Report.route) {
-                Text("视图（TODO）")
+                AnalyticsScreen()
             }
             composable(BottomNavItem.Assistant.route) {
                 assistantViewModel.initAssistant()

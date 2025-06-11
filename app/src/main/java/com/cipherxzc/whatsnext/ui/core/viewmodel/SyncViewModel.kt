@@ -62,9 +62,9 @@ class SyncViewModel(
                 todoDataViewModel.upsertItems(updatedItems)
 
                 // 推送本地未同步的 Item
-                val unsyncedItems   = todoDataViewModel.getUnSyncedItems()
-                cloudRepo.pushItems(userId, unsyncedItems)
-                todoDataViewModel.upsertItems(unsyncedItems)
+                val unSyncedItems   = todoDataViewModel.getUnSyncedItems()
+                cloudRepo.pushItems(userId, unSyncedItems)
+                todoDataViewModel.upsertItems(unSyncedItems)
 
                 // 更新本地最后同步时间
                 saveLastSync(now)
