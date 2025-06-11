@@ -13,6 +13,7 @@ private data class FirestoreTodoItemDto(
     var title: String = "",
     var detail: String = "",
     var dueDate: Timestamp? = null,
+    var importance: Int? = null,
     var isCompleted: Boolean = false,
     // extra info
     var lastModified: Timestamp = Timestamp.now(),
@@ -30,6 +31,7 @@ class CloudRepository(
         title = title,
         detail = detail,
         dueDate = dueDate,
+        importance = importance,
         isCompleted = isCompleted,
         lastModified = lastModified,
         isDeleted = isDeleted
@@ -41,6 +43,7 @@ class CloudRepository(
         title = title,
         detail = detail,
         dueDate = dueDate,
+        importance = importance,
         isCompleted = isCompleted,
         lastModified = lastModified,
         isSynced = true,  // 已与云端同步
