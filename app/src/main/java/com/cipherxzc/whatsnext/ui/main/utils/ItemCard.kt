@@ -1,6 +1,5 @@
 package com.cipherxzc.whatsnext.ui.main.utils
 
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -11,23 +10,18 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.DismissDirection
-import androidx.compose.material.DismissValue
 import androidx.compose.material.ExperimentalMaterialApi
-import androidx.compose.material.FractionalThreshold
-import androidx.compose.material.SwipeToDismiss
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material.rememberDismissState
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SwipeToDismissBox
+import androidx.compose.material3.SwipeToDismissBoxValue
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberSwipeToDismissBoxState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -43,7 +37,6 @@ enum class CardType {
 }
 
 // TODO: 使用 AnchoredDraggable 替代 SwipeToDismiss 实现更复杂的滑动交互
-// TODO: 使用 material3 替代
 @OptIn(ExperimentalMaterialApi::class, ExperimentalFoundationApi::class)
 @Composable
 fun ItemCard(
@@ -65,23 +58,23 @@ fun ItemCard(
     }
     val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA) }
 
-    // 右滑过程中的滑动比例，用于做背景透明度等动画
-    val dismissState = rememberDismissState { value ->
-        when (value) {
-            DismissValue.DismissedToEnd -> {
-                onDismiss()
+    val dismissState = rememberSwipeToDismissBoxState(
+        positionalThreshold = { it * 0.7f },          // 与旧代码保持一致
+        confirmValueChange = { value ->
+            when (value) {
+                SwipeToDismissBoxValue.StartToEnd -> {
+                    onDismiss() // 右滑：完成/还原
+                }
+
+                SwipeToDismissBoxValue.EndToStart -> {
+                    onDelete?.invoke() // 左滑：删除（可选）
+                }
+
+                else -> null
             }
-            DismissValue.DismissedToStart -> {
-                onDelete?.let { it() }
-            }
-            else -> {
-                // Do nothing
-            }
+            false
         }
-        false
-    }
-    val progress by animateFloatAsState(dismissState.progress.fraction)
-    val dismissThreshold = remember { 0.8f }
+    )
 
     Card(
         modifier = modifier
@@ -91,18 +84,16 @@ fun ItemCard(
                 onLongClick = onLongPress
             )
     ) {
-        SwipeToDismiss(
-            modifier = Modifier.fillMaxWidth(),
+        SwipeToDismissBox(
             state = dismissState,
-            directions = setOf(DismissDirection.StartToEnd).let { directions ->
-                if (onDelete != null) directions + DismissDirection.EndToStart else directions
-            },
-            dismissThresholds = { direction -> FractionalThreshold(dismissThreshold) },
-            background = {
+            enableDismissFromStartToEnd = true,
+            enableDismissFromEndToStart = onDelete != null,
+            backgroundContent = {
                 val direction = dismissState.dismissDirection
+                val progress  = dismissState.progress
                 when (direction) {
-                    DismissDirection.StartToEnd -> {
-                        // 右滑背景（完成/还原）
+                    SwipeToDismissBoxValue.StartToEnd -> {
+                        // 右滑背景
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -111,15 +102,13 @@ fun ItemCard(
                             contentAlignment = Alignment.CenterStart
                         ) {
                             Icon(
-                                icon,
-                                contentDescription = null,
-                                tint = Color.White.copy(alpha = if (progress > dismissThreshold) 1f else 0f)
+                                icon, null,
+                                tint = Color.White.copy(alpha = if (progress > .7f) 1f else 0f)
                             )
                         }
                     }
-
-                    DismissDirection.EndToStart -> {
-                        // 左滑背景（删除）
+                    SwipeToDismissBoxValue.EndToStart -> {
+                        // 左滑背景
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
@@ -128,46 +117,33 @@ fun ItemCard(
                             contentAlignment = Alignment.CenterEnd
                         ) {
                             Icon(
-                                Icons.Default.Delete,
-                                contentDescription = "delete",
-                                tint = Color.White.copy(alpha = if (progress > dismissThreshold) 1f else 0f)
+                                Icons.Default.Delete, "delete",
+                                tint = Color.White.copy(alpha = if (progress > .7f) 1f else 0f)
                             )
                         }
                     }
-
                     else -> {}
                 }
-            },
-            dismissContent = {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .wrapContentHeight()
-                        .background(
-                            MaterialTheme.colorScheme.surfaceVariant,
-                            shape = RoundedCornerShape(12.dp)
-                        )
-                ) {
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = item.title,
-                            modifier = Modifier.weight(1f)
-                        )
-                        item.dueDate?.let { ts ->
-                            Text(
-                                text = dateFormat.format(ts),
-                            )
-                        }
-                    }
-
-                    content()
-                }
             }
-        )
+        ) {
+            Column(
+                Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+            ) {
+                Row(
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(item.title, modifier = Modifier.weight(1f))
+                    item.dueDate?.let { ts ->
+                        Text(dateFormat.format(ts))
+                    }
+                }
+                content()   // 透传可扩展内容
+            }
+        }
     }
 }

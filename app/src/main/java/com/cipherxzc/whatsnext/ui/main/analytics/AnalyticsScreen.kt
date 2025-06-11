@@ -61,7 +61,7 @@ fun TodoQuadrantChart(
 ) {
     val density = LocalDensity.current
     val touchPoints = remember { mutableStateListOf<Pair<Offset, TodoItem>>() }
-    val touchPointRadius = with(density) { 8.dp.toPx() }
+    val touchPointRadius = with(density) { 12.dp.toPx() }
 
     Canvas(
         modifier = Modifier
