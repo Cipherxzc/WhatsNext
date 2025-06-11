@@ -74,6 +74,8 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
     implementation(libs.openai.client)
     implementation(libs.ktor.ktor.client.okhttp)
+    implementation(libs.androidx.ui.text.google.fonts)
+    implementation(libs.material3)
     kapt(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

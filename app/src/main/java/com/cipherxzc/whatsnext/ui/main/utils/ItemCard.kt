@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.SwipeToDismissBox
@@ -27,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.cipherxzc.whatsnext.data.database.TodoItemInfo
@@ -54,22 +56,22 @@ fun ItemCard(
     // 根据类型选择背景色和图标
     val (backgroundColor, icon) = when (type) {
         CardType.Complete ->
-            Color(0xFF4CAF50) to Icons.Default.Check
+            Color(0xFFB0E174) to Icons.Default.Check // 更清新的黄绿色
         CardType.Reset ->
-            Color(0xFFFFC107) to Icons.Default.Refresh
+            Color(0xFFFFEC61) to Icons.Default.Refresh // 更柔和的黄色
     }
     val dateFormat = remember { SimpleDateFormat("yyyy-MM-dd HH:mm", Locale.CHINA) }
 
     val dismissState = rememberSwipeToDismissBoxState(
-        positionalThreshold = { it * 0.7f },          // 与旧代码保持一致
+        positionalThreshold = { it * 0.7f },
         confirmValueChange = { value ->
             when (value) {
                 SwipeToDismissBoxValue.StartToEnd -> {
-                    onDismiss() // 右滑：完成/还原
+                    onDismiss()
                 }
 
                 SwipeToDismissBoxValue.EndToStart -> {
-                    onDelete?.invoke() // 左滑：删除（可选）
+                    onDelete?.invoke()
                 }
 
                 else -> null
@@ -80,11 +82,19 @@ fun ItemCard(
 
     Card(
         modifier = modifier
-            .padding(horizontal = 0.dp, vertical = 8.dp)
+            .padding(horizontal = 8.dp, vertical = 8.dp)
             .combinedClickable(
                 onClick = onItemClicked,
                 onLongClick = onLongPress
-            )
+            ),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surfaceVariant,
+            contentColor = MaterialTheme.colorScheme.onSurfaceVariant
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 4.dp
+        ),
+        shape = MaterialTheme.shapes.medium
     ) {
         SwipeToDismissBox(
             state = dismissState,
@@ -92,38 +102,53 @@ fun ItemCard(
             enableDismissFromEndToStart = onDelete != null,
             backgroundContent = {
                 val direction = dismissState.dismissDirection
-                val progress  = dismissState.progress
                 when (direction) {
                     SwipeToDismissBoxValue.StartToEnd -> {
                         // 右滑背景
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(backgroundColor.copy(alpha = 0.5f + 0.5f * progress))
-                                .padding(horizontal = 20.dp),
+                                .background(
+                                    Brush.horizontalGradient(
+                                        colors = listOf(
+                                            backgroundColor.copy(alpha = 0.5f),
+                                            backgroundColor
+                                        )
+                                    )
+                                ),
                             contentAlignment = Alignment.CenterStart
                         ) {
                             Icon(
-                                icon, null,
-                                tint = Color.White.copy(alpha = if (progress > .7f) 1f else 0f)
+                                imageVector = icon,
+                                contentDescription = "Complete",
+                                tint = MaterialTheme.colorScheme.onPrimary
                             )
                         }
                     }
+
                     SwipeToDismissBoxValue.EndToStart -> {
                         // 左滑背景
                         Box(
                             modifier = Modifier
                                 .fillMaxSize()
-                                .background(Color.Red.copy(alpha = 0.5f + 0.5f * progress))
-                                .padding(horizontal = 20.dp),
+                                .background(
+                                    Brush.horizontalGradient(
+                                        colors = listOf(
+                                            MaterialTheme.colorScheme.error,
+                                            MaterialTheme.colorScheme.error.copy(alpha = 0.5f)
+                                        )
+                                    )
+                                ),
                             contentAlignment = Alignment.CenterEnd
                         ) {
                             Icon(
-                                Icons.Default.Delete, "delete",
-                                tint = Color.White.copy(alpha = if (progress > .7f) 1f else 0f)
+                                imageVector = Icons.Default.Delete,
+                                contentDescription = "Delete",
+                                tint = MaterialTheme.colorScheme.onError
                             )
                         }
                     }
+
                     else -> {}
                 }
             }

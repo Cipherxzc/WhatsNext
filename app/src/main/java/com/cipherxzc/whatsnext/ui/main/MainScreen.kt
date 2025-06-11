@@ -1,12 +1,13 @@
 package com.cipherxzc.whatsnext.ui.main
 
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.DateRange
-import androidx.compose.material.icons.filled.List
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -17,10 +18,13 @@ import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
+import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
@@ -37,7 +41,7 @@ import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModel
 import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModelFactory
 
 private sealed class BottomNavItem(val route: String, val icon: ImageVector, val label: String) {
-    object TodoList : BottomNavItem("todolist", Icons.Default.List, "TodoList")
+    object TodoList : BottomNavItem("todolist", Icons.AutoMirrored.Filled.List, "TodoList")
     object Report : BottomNavItem("report", Icons.Default.DateRange, "视图")
     object Assistant : BottomNavItem("assistant", Icons.Default.Person, "AI助手")
 }
@@ -79,22 +83,45 @@ fun MainScreen(
                     )
                 },
                 actions = {
-                    IconButton(onClick = onLogout) {
+                    IconButton(
+                        onClick = onLogout,
+                        modifier = Modifier.animateContentSize()
+                    ) {
                         Icon(
                             imageVector = Icons.AutoMirrored.Outlined.ExitToApp,
-                            contentDescription = "Logout"
+                            contentDescription = "Logout",
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
-                }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surfaceColorAtElevation(4.dp)
+                )
             )
         },
         bottomBar = {
-            NavigationBar {
+            NavigationBar(
+                containerColor = MaterialTheme.colorScheme.surface,
+                tonalElevation = 4.dp
+            ) {
                 val currentRoute = navController.currentBackStackEntryAsState().value?.destination?.route
                 items.forEach { item ->
                     NavigationBarItem(
-                        icon = { Icon(item.icon, contentDescription = item.label) },
-                        label = { Text(item.label) },
+                        icon = {
+                            Icon(
+                                item.icon,
+                                contentDescription = item.label,
+                                tint = if (currentRoute == item.route) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                            )
+                        },
+                        label = {
+                            Text(
+                                item.label,
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    color = if (currentRoute == item.route) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurface
+                                )
+                            )
+                        },
                         selected = currentRoute == item.route,
                         onClick = {
                             if (currentRoute != item.route) {
@@ -104,7 +131,8 @@ fun MainScreen(
                                     restoreState = true
                                 }
                             }
-                        }
+                        },
+                        alwaysShowLabel = false
                     )
                 }
             }
