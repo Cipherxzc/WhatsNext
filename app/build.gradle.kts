@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.ktor.ktor.client.okhttp)
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.material3)
+    implementation(libs.androidx.core.ktx.v1131)
     kapt(libs.androidx.room.compiler)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
