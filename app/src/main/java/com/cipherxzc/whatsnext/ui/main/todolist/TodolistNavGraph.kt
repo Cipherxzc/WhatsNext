@@ -1,8 +1,7 @@
 package com.cipherxzc.whatsnext.ui.main.todolist
 
-import android.app.Application
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.platform.LocalContext
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -10,7 +9,6 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.cipherxzc.whatsnext.ui.core.viewmodel.SyncViewModel
-import com.cipherxzc.whatsnext.ui.core.viewmodel.SyncViewModelFactory
 import com.cipherxzc.whatsnext.ui.core.viewmodel.TodoDataViewModel
 import com.cipherxzc.whatsnext.ui.main.assistant.viewmodel.AzureViewModel
 import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoDetailViewModel
@@ -21,12 +19,13 @@ import com.cipherxzc.whatsnext.ui.main.todolist.viewmodel.TodoListViewModel
 fun TodoListNavGraph(
     todoListTopBar: @Composable () -> Unit,
     todoDataViewModel: TodoDataViewModel,
+    syncViewModel: SyncViewModel,
     todoListViewModel: TodoListViewModel,
     azureViewModel: AzureViewModel
 ){
-    val syncViewModel: SyncViewModel = viewModel(
-        factory = SyncViewModelFactory(LocalContext.current.applicationContext as Application, todoDataViewModel)
-    )
+    LaunchedEffect(Unit) {
+        syncViewModel.sync()
+    }
 
     val navController = rememberNavController()
     NavHost(navController = navController, startDestination = "itemList") {

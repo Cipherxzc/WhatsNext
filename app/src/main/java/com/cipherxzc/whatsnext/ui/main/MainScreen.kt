@@ -1,5 +1,6 @@
 package com.cipherxzc.whatsnext.ui.main
 
+import android.app.Application
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -23,6 +24,7 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -31,6 +33,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.cipherxzc.whatsnext.ui.core.viewmodel.SyncViewModel
+import com.cipherxzc.whatsnext.ui.core.viewmodel.SyncViewModelFactory
 import com.cipherxzc.whatsnext.ui.core.viewmodel.TodoDataViewModel
 import com.cipherxzc.whatsnext.ui.main.analytics.AnalyticsScreen
 import com.cipherxzc.whatsnext.ui.main.assistant.AssistantScreen
@@ -61,6 +65,9 @@ fun MainScreen(
         BottomNavItem.Assistant
     )
 
+    val syncViewModel: SyncViewModel = viewModel(
+        factory = SyncViewModelFactory(LocalContext.current.applicationContext as Application, todoDataViewModel)
+    )
     val todoListViewModel: TodoListViewModel = viewModel(
         factory = TodoListViewModelFactory(todoDataViewModel)
     )
@@ -98,6 +105,9 @@ fun MainScreen(
                         selected = currentRoute == item.route,
                         onClick = {
                             if (currentRoute != item.route) {
+                                if (item.route == "todolist") {
+                                    syncViewModel.sync()
+                                }
                                 navController.navigate(item.route) {
                                     popUpTo(navController.graph.startDestinationId) { saveState = true }
                                     launchSingleTop = true
@@ -120,6 +130,7 @@ fun MainScreen(
                 TodoListNavGraph(
                     todoListTopBar = { TodoListTopBar(userName, onLogout) },
                     todoDataViewModel = todoDataViewModel,
+                    syncViewModel = syncViewModel,
                     todoListViewModel = todoListViewModel,
                     azureViewModel = azureViewModel
                 )
