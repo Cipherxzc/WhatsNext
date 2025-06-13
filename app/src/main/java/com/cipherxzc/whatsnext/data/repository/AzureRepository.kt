@@ -114,7 +114,7 @@ class AzureRepository() {
     fun getUserPrompt(): String = promptBuilder.toString().trim()
 
     suspend fun sendToLLM(
-        maxTokens: Int = 512,
+        maxTokens: Int = 8192,
         temperature: Double = 0.7,
         timeoutMillis: Long = 10000L,
         asJson: Boolean = false,

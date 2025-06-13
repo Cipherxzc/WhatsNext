@@ -32,6 +32,7 @@ import androidx.compose.material3.surfaceColorAtElevation
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -242,16 +243,18 @@ private fun ItemsInfoList(
 ) {
     Column(modifier = Modifier.fillMaxWidth()) {
         entry.items.forEach { (id, item) ->
-            ItemCard(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 4.dp),
-                item = item,
-                type = CardType.Complete,
-                onItemClicked = { onPreview(item) },
-                onDismiss = { assistantViewModel.acceptItem(id) },
-                onDelete = { assistantViewModel.dismissItem(id) }
-            )
+            key(id) {
+                ItemCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp),
+                    item = item,
+                    type = CardType.Complete,
+                    onItemClicked = { onPreview(item) },
+                    onDismiss = { assistantViewModel.acceptItem(id) },
+                    onDelete = { assistantViewModel.dismissItem(id) }
+                )
+            }
         }
     }
 }
