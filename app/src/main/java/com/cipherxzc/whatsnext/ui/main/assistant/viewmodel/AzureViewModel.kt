@@ -52,7 +52,7 @@ class AzureViewModel(
     
         ## Output FORMAT
         Return ONLY a JSON array, each element:
-        { "id": "<item id>", "reason": "<≤25 words>" }
+        { "id": "<item id>", "reason": "<≤50 words>(same language they used)" }
     
         List up to THREE items in the order you recommend tackling them.
         """.trimIndent()
