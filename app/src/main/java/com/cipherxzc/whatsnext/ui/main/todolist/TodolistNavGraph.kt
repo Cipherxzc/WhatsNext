@@ -25,6 +25,7 @@ fun TodoListNavGraph(
 ){
     LaunchedEffect(Unit) {
         syncViewModel.sync()
+        todoListViewModel.loadItems()
     }
 
     val navController = rememberNavController()

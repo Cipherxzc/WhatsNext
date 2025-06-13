@@ -107,6 +107,7 @@ fun MainScreen(
                             if (currentRoute != item.route) {
                                 if (item.route == "todolist") {
                                     syncViewModel.sync()
+                                    todoListViewModel.loadItems()
                                 }
                                 navController.navigate(item.route) {
                                     popUpTo(navController.graph.startDestinationId) { saveState = true }
