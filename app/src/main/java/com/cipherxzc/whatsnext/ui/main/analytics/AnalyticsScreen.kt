@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.sp
 import com.cipherxzc.whatsnext.data.database.TodoItem
 import com.cipherxzc.whatsnext.data.database.TodoItemInfo
 import com.cipherxzc.whatsnext.ui.main.utils.TodoItemPreview
+import kotlin.math.ln
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -81,11 +82,14 @@ fun AnalyticsScreen(
 @Composable
 fun TodoQuadrantChart(
     items: List<TodoItem>,
-    maxDays: Int = 10,
+    maxDays: Int = 30,
     urgentDays: Int = 3,
     importanceCut: Int = 5,
     onItemClick: (TodoItem) -> Unit
 ) {
+    val maxDays = maxDays * 86_400_000L
+    val urgentDays = urgentDays * 86_400_000L
+
     val density = LocalDensity.current
     val touchPoints = remember { mutableStateListOf<Pair<Offset, TodoItem>>() }
     val touchPointRadius = with(density) { 12.dp.toPx() }
@@ -125,8 +129,12 @@ fun TodoQuadrantChart(
         val originY = size.height - bottomPad
 
         // 坐标转换 λ
-        fun xPos(days: Float) =
-            originX + ((days.coerceIn(0f, maxDays.toFloat()) + 1f) / (maxDays + 2)) * plotW
+        fun xPos(days: Float): Float {
+            val lnDays = ln(1f + days.coerceIn(0f, maxDays.toFloat()) / 3_600_000L)
+            val lnMaxDays = ln(1f + maxDays.toFloat() / 3_600_000L)
+            val scaled = (lnDays + 0.3f) / (lnMaxDays + 0.8f)
+            return originX + scaled * plotW
+        }
 
         fun yPos(importance: Float) =
             originY - ((importance.coerceIn(0f, 10f) + 1f) / 12f) * plotH
@@ -223,8 +231,8 @@ fun TodoQuadrantChart(
 
             // 距截止日的天数；null 视为 maxDays
             val now = System.currentTimeMillis()
-            val dueMillis = item.dueDate?.toDate()?.time ?: (now + maxDays * 86_400_000L)
-            val diffDays = ((dueMillis - now).coerceAtLeast(0) / 86_400_000L).toFloat()
+            val dueMillis = item.dueDate?.toDate()?.time ?: (now + maxDays)
+            val diffDays = (dueMillis - now).coerceAtLeast(0).toFloat()
 
             // 坐标
             val px = xPos(diffDays)
@@ -236,10 +244,10 @@ fun TodoQuadrantChart(
 
             // 按象限分色
             val color = when {
-                imp >= importanceCut && diffDays <= urgentDays -> Color.Red
+                imp >= importanceCut && diffDays <= urgentDays -> Color(0xFFE8505B)
                 imp >= importanceCut && diffDays >  urgentDays -> Color(0xFFFFA500) // Orange
-                imp <  importanceCut && diffDays <= urgentDays -> Color.Blue
-                else                                           -> Color(0xFF4CAF50) // Green
+                imp <  importanceCut && diffDays <= urgentDays -> Color(0xFF4F7FFF)
+                else                                           -> Color(0xFFFFEC61) // Green
             }
 
             // 绘制
