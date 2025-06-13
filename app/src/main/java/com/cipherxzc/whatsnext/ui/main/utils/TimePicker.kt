@@ -55,13 +55,13 @@ fun TimePicker(
     ) {
         NumberPicker(
             value = selectedHour,
-            range = 0..23,
+            range = 0..24,
             onValueChange = { selectedHour = it },
             label = "时"
         )
         NumberPicker(
             value = selectedMinute,
-            range = 0..59,
+            range = 0..60,
             onValueChange = { selectedMinute = it },
             label = "分"
         )
